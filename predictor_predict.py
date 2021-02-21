@@ -38,7 +38,7 @@ def pred_closing_price(df, scaler, model):
     closing_price = scaler.inverse_transform(closing_price)
     predicted_price = float(closing_price[-1])
 
-    print("closing price: ", closing_price)
+    # print("closing price: ", closing_price)
 
     return predicted_price
 
@@ -67,10 +67,10 @@ def pred_predictor(tick, df):
         # filter datas
         df_filtered = df[ (df.index < (len_df - 60 + i) )]
 
-        print('Predicting closing stock price...')
+        #print('Predicting closing stock price...')
         predicted_price = pred_closing_price(df_filtered, my_scaler, model)
 
-        print('Predicted price: '+'$ '+str("{:.2f}".format(predicted_price)))
+        #print('Predicted price: '+'$ '+str("{:.2f}".format(predicted_price)))
 
         df.loc[(len_df - 60 + i), "prediction"] = predicted_price
         df.loc[(len_df - 60 + i), "trend"] = df.loc[(len_df - 60 + i), "Close"] - df.loc[(len_df - 60 + i - 1), "Close"]

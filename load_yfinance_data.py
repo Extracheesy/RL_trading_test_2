@@ -122,7 +122,7 @@ def get_NASDAQ_ticker_list():
     url = "ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt"
     df = pd.read_csv(url, sep="|")
 
-    print("nb stocks",len(df['Symbol']))
+    # print("nb stocks",len(df['Symbol']))
 
     return df
 
@@ -254,11 +254,6 @@ def get_data_finance():
 
                 TA = pred_predictor(stock, df_data_yf)
                 df_movementstocklist["Trend_Accuracy"] = round(TA, 2)
-
-
-
-
-
 
                 df_movementlist = df_movementlist.append(df_movementstocklist)
 
