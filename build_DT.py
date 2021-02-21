@@ -37,7 +37,12 @@ def add_trend(df_stock_price):
 
     df_stock_price['trend'] = delta
 
+    df_stock_price = df_stock_price.replace([np.inf, -np.inf], np.nan).dropna()
+    df_stock_price = df_stock_price.reset_index(drop=True)
+    # df = df.reset_index(drop=True)
+
     len_df = len(df_stock_price)
+
     for i in range(0,len_df,1):
         df_stock_price.loc[i,"trend"] = df_stock_price.loc[i,"trend"] * (-1)
         if(df_stock_price.loc[i,"trend"] <= 0):
@@ -112,6 +117,9 @@ def add_technical_indicator(df):
 
         df.loc[i,"+DI"] = pdi.iloc[i][0]
         df.loc[i,"-DI"] = mdi.iloc[i][0]
+
+    #df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=1)
+    df = df.replace([np.inf, -np.inf], np.nan).dropna()
 
     return df
 
@@ -218,7 +226,6 @@ def SMA(df_stock_price):
 
 def DT_load_process_data(df):
 
-
     df['Date'] = df.index
 
     df = df.reset_index(drop=True)
@@ -235,6 +242,11 @@ def DT_load_process_data(df):
 
     # sort by datetime
     df.sort_values(by = 'Date', inplace = True, ascending = True)
+
+    return df
+
+
+def DT_process_trend(df):
 
     # Old fashion calc technical incicators
     # df = SMA(df)
@@ -268,9 +280,13 @@ def get_Data_5years(ticker):
             if (nb_try > 5):
                 df_empty = pd.DataFrame({"ticker": [ticker],
                                          "nb_days": [0],
-                                         "deltapercent": [0],
-                                         "deltaprice": [0],
+                                         "delta_%_h_l_5d": [0],
+                                         "delta_%_o_c_5d": [0],
+                                         "delta_%_o_c_1d": [0],
                                          "DT_results": [0],
+                                         "RMSE": [0],
+                                         "MAPE": [0],
+                                         "Trend_Accuracy": [0],
                                          "data_size": [0]})
                 return df_empty
     return data
@@ -280,19 +296,27 @@ def SaveDataDT(df, filename):
 
     df.to_csv("./data/yfinance_data_DT/" + filename + ".csv")
 
+def SaveDataPredict(df, filename):
+
+    df.to_csv("./data/yfinance_data_predict/" + filename + ".csv")
 
 def process_decision_tree(stock):
 
     df = get_Data_5years(stock)
+    df = DT_load_process_data(df)
+
+    today = date.today()
+    SaveDataPredict(df, stock + "_" + str(today))
+
+    df_yf = df.copy()
 
     if (len(df) < 70):
         return 0 , 0
 
-    df = DT_load_process_data(df.copy())
+    df = DT_process_trend(df)
 
-    today = date.today()
-    SaveDataDT(df, stock + "_" + str(today))
+    SaveDataDT(df, stock + "_DT_" + str(today))
 
     DT_results = main_DT_train(df)
 
-    return DT_results, len(df)
+    return DT_results, len(df), df_yf

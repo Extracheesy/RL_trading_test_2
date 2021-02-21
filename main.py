@@ -34,10 +34,35 @@ def clear_data_directory():
             print("remove : ", entry)
             os.remove("./data/yfinance_data_DT/" + entry)
 
+    listOfFilesToRemove = os.listdir('./data/yfinance_data_predict/')
+    pattern = "*.csv"
+    for entry in listOfFilesToRemove:
+        if fnmatch.fnmatch(entry, pattern):
+            print("remove : ", entry)
+            os.remove("./data/yfinance_data_predict/" + entry)
+
+def clear_model_directory():
+
+    listOfFilesToRemove = os.listdir('./data/yfinance_model/')
+    pattern_pkl = "*.pkl"
+    pattern_gz = "*.gz"
+    for entry in listOfFilesToRemove:
+        if fnmatch.fnmatch(entry, pattern_pkl):
+            print("remove : ",entry)
+            os.remove("./data/yfinance_model/" + entry)
+        else:
+            if fnmatch.fnmatch(entry, pattern_gz):
+                print("remove : ", entry)
+                os.remove("./data/yfinance_model/" + entry)
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
+    COMPUTE_MODEL = "COMPUTE_MODEL"
+
     clear_data_directory()
+    if (COMPUTE_MODEL == "COMPUTE_MODEL"):
+        clear_model_directory()
 
     df_data_stock_list = get_data_finance()
 

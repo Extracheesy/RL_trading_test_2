@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 
 from build_DT import *
+from train_predict import *
+from predictor_predict import *
 import datetime
 from datetime import date, timedelta
 
@@ -32,7 +34,7 @@ def get_Data_5days(ticker):
     #start_date= str("2017") + "-" + str("01") + "-" + str("01")
 
     nb_df_row = 0
-    nb_days = 8
+    nb_days = 9
     today = date.today()
 
     start_date = today - timedelta(days=nb_days)
@@ -48,9 +50,13 @@ def get_Data_5days(ticker):
             if (nb_try > 5):
                 df_empty = pd.DataFrame({"ticker": [ticker],
                                          "nb_days": [0],
-                                         "deltapercent": [0],
-                                         "deltaprice": [0],
+                                         "delta_%_h_l_5d": [0],
+                                         "delta_%_o_c_5d": [0],
+                                         "delta_%_o_c_1d": [0],
                                          "DT_results": [0],
+                                         "RMSE": [0],
+                                         "MAPE": [0],
+                                         "Trend_Accuracy": [0],
                                          "data_size": [0]})
                 return df_empty
 
@@ -115,8 +121,7 @@ def get_NASDAQ_ticker_list():
     # list all NASDAQ stocks
     url = "ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt"
     df = pd.read_csv(url, sep="|")
-    #print(df.head())
-    #print(df['Symbol'].head())
+
     print("nb stocks",len(df['Symbol']))
 
     return df
@@ -130,8 +135,14 @@ def get_movment_list(stock):
     if len(df_stock_data) == 1:
         df_stock_empty = pd.DataFrame({"ticker": [stock],
                                        "nb_days": [0],
-                                       "deltapercent": [0],
-                                       "deltaprice": [0]})
+                                       "delta_%_h_l_5d": [0],
+                                       "delta_%_o_c_5d": [0],
+                                       "delta_%_o_c_1d": [0],
+                                       "DT_results": [0],
+                                       "RMSE": [0],
+                                       "MAPE": [0],
+                                       "Trend_Accuracy": [0],
+                                       "data_size": [0]})
         return df_stock_empty
 
     low = float(10000)
@@ -153,6 +164,7 @@ def get_movment_list(stock):
     len_df = len(df_stock_data)
 
     Open = lookup_fn(df_stock_data, 0, "Open")
+    Open1d = lookup_fn(df_stock_data, len_df - 1, "Open")
     Close = lookup_fn(df_stock_data, len_df - 1, "Close")
 
     if Open == 0:
@@ -160,13 +172,22 @@ def get_movment_list(stock):
     else:
         deltaprice = 100 * (Close - Open) / Open
 
+    if Open1d == 0:
+        deltaprice1d = 0
+    else:
+        deltaprice1d = 100 * (Close - Open1d) / Open1d
+
     #print(stock + " " + str(deltapercent) + " " + str(deltaprice))
 
     df_movementlist = pd.DataFrame({"ticker": [stock],
                                     "nb_days": [len_df],
-                                    "deltapercent": [deltapercent],
-                                    "deltaprice": [deltaprice],
+                                    "delta_%_h_l_5d": [round(deltapercent,2)],
+                                    "delta_%_o_c_5d": [round(deltaprice,2)],
+                                    "delta_%_o_c_1d": [round(deltaprice1d,2)],
                                     "DT_results": [0],
+                                    "RMSE": [0],
+                                    "MAPE": [0],
+                                    "Trend_Accuracy": [0],
                                     "data_size": [0]})
 
     # pair = [stock, deltapercent, deltaprice]
@@ -187,6 +208,8 @@ def get_DT_prediction(stock):
 
 def get_data_finance():
 
+    COMPUTE_MODEL = "COMPUTE_MODEL"
+
     df_ticker_list = get_NASDAQ_ticker_list()
     df_ticker_list.drop([len(df_ticker_list) - 1], axis=0, inplace=True)
 
@@ -195,30 +218,58 @@ def get_data_finance():
     # Calling DataFrame constructor
     df_movementlist = pd.DataFrame({"ticker": [],
                                     "nb_days": [],
-                                    "deltapercent": [],
-                                    "deltaprice": [],
+                                    "delta_%_h_l_5d": [],
+                                    "delta_%_o_c_5d": [],
+                                    "delta_%_o_c_1d": [],
                                     "DT_results": [],
+                                    "RMSE": [],
+                                    "MAPE": [],
+                                    "Trend_Accuracy": [],
                                     "data_size": []})
 
     df_filtered_ticker_list = df_ticker_list[ (df_ticker_list['Test Issue'] == "N")]
 
+    global_start_stock = datetime.datetime.now()
+
     for stock in df_filtered_ticker_list['Symbol']:
+        #if( stock.startswith("A") or stock.startswith("B") or stock.startswith("C") ):
+        if( stock == "AACG" ):
+                start_stock = datetime.datetime.now()
+                print("start", stock)
 
-            start_stock = datetime.datetime.now()
+                df_movementstocklist = get_movment_list(stock)
 
-            df_movementstocklist = get_movment_list(stock)
+                DT_result , data_len, df_data_yf = process_decision_tree(stock)
 
-            DT_result , data_len = process_decision_tree(stock)
+                df_movementstocklist["DT_results"] = DT_result
+                df_movementstocklist["data_size"] = round(data_len / 253, 2)
 
-            df_movementstocklist["DT_results"] = DT_result
-            df_movementstocklist["data_size"] = round(data_len / 253, 2)
+                # Compute Model
+                if (COMPUTE_MODEL == "COMPUTE_MODEL"):
+                    rmse, mape = train_model(stock, df_data_yf)
 
-            df_movementlist = df_movementlist.append(df_movementstocklist)
+                    # Insert new row in dataframe
+                    df_movementstocklist["RMSE"] = round(rmse,2)
+                    df_movementstocklist["MAPE"] = round(mape,2)
 
-            end_stock = datetime.datetime.now()
-            delta = end_stock - start_stock
-            print("stock:",stock ," time: ",delta)
+                TA = pred_predictor(stock, df_data_yf)
+                df_movementstocklist["Trend_Accuracy"] = round(TA, 2)
+
+
+
+
+
+
+                df_movementlist = df_movementlist.append(df_movementstocklist)
+
+                end_stock = datetime.datetime.now()
+                delta = end_stock - start_stock
+                print("stock:",stock ," time: ",delta)
 
     SaveData(df_movementlist, "movmentlist.csv")
+
+    global_end_stock = datetime.datetime.now()
+    delta = global_end_stock - global_start_stock
+    print("consumed time: ", delta)
 
     return df_ticker_list
