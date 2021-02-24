@@ -60,6 +60,19 @@ def get_Data_5days(ticker):
                                          "data_size": [0]})
                 return df_empty
 
+    data['Date'] = data.index
+
+    data = data.reset_index(drop=True)
+
+    cols = ['Date'] + [col for col in data if col != 'Date']
+    data = data[cols]
+    data['Date'] = pd.to_datetime(data['Date'])
+
+    # sort by datetime
+    data.sort_values(by = 'Date', inplace = True, ascending = False)
+
+    data = data.reset_index(drop=True)
+
     nb_df_row = len(data)
     #print("len rows: ", nb_df_row)
 
@@ -71,7 +84,7 @@ def get_Data_5days(ticker):
         data = remove_row(data,5)
         data = remove_row(data,6)
     if nb_df_row == 6:
-        data = remove_row(data,5)
+        data = remove_row(data,nb_df_row - 1)
 
     #print("len rows: ", nb_df_row)
 
@@ -163,9 +176,9 @@ def get_movment_list(stock):
 
     len_df = len(df_stock_data)
 
-    Open = lookup_fn(df_stock_data, 0, "Open")
-    Open1d = lookup_fn(df_stock_data, len_df - 1, "Open")
-    Close = lookup_fn(df_stock_data, len_df - 1, "Close")
+    Open1d = lookup_fn(df_stock_data, 0, "Open")
+    Open = lookup_fn(df_stock_data, len_df - 1, "Open")
+    Close = lookup_fn(df_stock_data, 0, "Close")
 
     if Open == 0:
         deltaprice = 0
@@ -231,9 +244,16 @@ def get_data_finance():
 
     global_start_stock = datetime.datetime.now()
 
+    cpt = 0
     for stock in df_filtered_ticker_list['Symbol']:
-        #if( stock.startswith("A") or stock.startswith("B") or stock.startswith("C") ):
-        if( stock == "AACG" ):
+        if(cpt < 105):
+            cpt = cpt + 1
+        else:
+            if( stock.startswith("A") ):
+            #if (stock.startswith("A") or stock.startswith("B") or stock.startswith("C")):
+            #if( stock == "AACG" ): AACQ
+            #if (stock == "ADV"):
+
                 start_stock = datetime.datetime.now()
                 print("start", stock)
 
@@ -241,19 +261,28 @@ def get_data_finance():
 
                 DT_result , data_len, df_data_yf = process_decision_tree(stock)
 
-                df_movementstocklist["DT_results"] = DT_result
-                df_movementstocklist["data_size"] = round(data_len / 253, 2)
+                if (data_len < 2):
+                    df_movementstocklist["DT_results"] = DT_result
+                    df_movementstocklist["data_size"] = round(data_len / 253, 2)
+                    df_movementstocklist["RMSE"] = 0
+                    df_movementstocklist["MAPE"] = 0
+                    df_movementstocklist["Trend_Accuracy"] = 0
+                else:
+                    df_movementstocklist["DT_results"] = DT_result
+                    df_movementstocklist["data_size"] = round(data_len / 253, 2)
 
-                # Compute Model
-                if (COMPUTE_MODEL == "COMPUTE_MODEL"):
-                    rmse, mape = train_model(stock, df_data_yf)
+                    # Compute Model
+                    if (COMPUTE_MODEL == "COMPUTE_MODEL"):
+                        rmse, mape = train_model(stock, df_data_yf)
 
-                    # Insert new row in dataframe
-                    df_movementstocklist["RMSE"] = round(rmse,2)
-                    df_movementstocklist["MAPE"] = round(mape,2)
-
-                TA = pred_predictor(stock, df_data_yf)
-                df_movementstocklist["Trend_Accuracy"] = round(TA, 2)
+                        # Insert new row in dataframe
+                        df_movementstocklist["RMSE"] = round(rmse,2)
+                        df_movementstocklist["MAPE"] = round(mape,2)
+                    if (len(df_data_yf) > 402):
+                        TA = pred_predictor(stock, df_data_yf)
+                    else:
+                        TA = 0
+                    df_movementstocklist["Trend_Accuracy"] = round(TA, 2)
 
                 df_movementlist = df_movementlist.append(df_movementstocklist)
 
@@ -261,7 +290,11 @@ def get_data_finance():
                 delta = end_stock - start_stock
                 print("stock:",stock ," time: ",delta)
 
-    SaveData(df_movementlist, "movmentlist.csv")
+                cpt = cpt + 1
+                if ((cpt % 5) == 0):
+                    SaveData(df_movementlist, "movmentlist_tmp_" + str(cpt) + ".csv")
+
+    SaveData(df_movementlist, "movmentlist_final.csv")
 
     global_end_stock = datetime.datetime.now()
     delta = global_end_stock - global_start_stock

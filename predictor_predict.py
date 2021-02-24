@@ -65,6 +65,9 @@ def pred_predictor(tick, df):
 
     for i in range(0, 60, 1):
         # filter datas
+
+        if i == 52:
+            print ("debug")
         df_filtered = df[ (df.index < (len_df - 60 + i) )]
 
         #print('Predicting closing stock price...')

@@ -303,6 +303,10 @@ def SaveDataPredict(df, filename):
 def process_decision_tree(stock):
 
     df = get_Data_5years(stock)
+
+    if (len(df)<2):
+        return 0, len(df), df
+
     df = DT_load_process_data(df)
 
     today = date.today()
@@ -311,7 +315,7 @@ def process_decision_tree(stock):
     df_yf = df.copy()
 
     if (len(df) < 70):
-        return 0 , 0
+        return 0 , 0, df
 
     df = DT_process_trend(df)
 
