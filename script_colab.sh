@@ -5,7 +5,7 @@
 
 %cd ./RL_trading_test_2/
 
-!pip install -r ./req.txt
+!pip install -r ./req2.txt
 
 !pip install yfinance
 
