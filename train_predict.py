@@ -229,8 +229,7 @@ def save_model(model, model_filepath):
     OUTPUT:
     none
     """
-    with open(model_filepath, 'wb') as f:
-        pickle.dump(model, f)
+    model.save(model_filepath)
 
 def train_model(tick, tick_data_file):
 

@@ -7,6 +7,8 @@ import joblib
 # import function defined earlier in train.py
 from numpy.core._multiarray_umath import ndarray
 
+from keras.models import load_model
+
 #from train import load_process_data
 
 # slightly modified from get_pred_closing_price() from train.py
@@ -50,8 +52,7 @@ def pred_predictor(tick, df):
 
     # load pkl model file
     print('Loading model...')
-    with open(model_filepath, 'rb') as f:
-        model = pickle.load(f)
+    model = load_model(model_filepath)
 
     len_df = len(df)
 
