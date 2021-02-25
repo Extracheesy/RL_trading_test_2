@@ -9,4 +9,6 @@
 
 !pip install yfinance
 
+!pip install stockstats==0.3.2
+
 !python ./main.py
