@@ -75,8 +75,8 @@ def mk_directories():
     if not os.path.exists("./data/yfinance_data_DT/"):
         os.makedirs("./data/yfinance_data_DT/")
 
-    if not os.path.exists("./data/yfinance_data_model/"):
-        os.makedirs("./data/yfinance_data_model/")
+    if not os.path.exists("./data/yfinance_model/"):
+        os.makedirs("./data/yfinance_model/")
 
     if not os.path.exists("./data/yfinance_data_predict/"):
         os.makedirs("./data/yfinance_data_predict/")
