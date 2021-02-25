@@ -246,10 +246,10 @@ def get_data_finance():
 
     cpt = 0
     for stock in df_filtered_ticker_list['Symbol']:
-        if(cpt < 105):
+        if(cpt < 0):
             cpt = cpt + 1
         else:
-            if( stock.startswith("A") ):
+            if( stock.startswith("B") ):
             #if (stock.startswith("A") or stock.startswith("B") or stock.startswith("C")):
             #if( stock == "AACG" ): AACQ
             #if (stock == "ADV"):

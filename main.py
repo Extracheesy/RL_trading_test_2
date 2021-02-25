@@ -63,12 +63,34 @@ def clear_model_directory():
                 os.remove("./data/yfinance_model/" + entry)
 
 # Press the green button in the gutter to run the script.
+
+def mk_directories():
+
+    if not os.path.exists("./data"):
+        os.makedirs("./data")
+
+    if not os.path.exists("./data/yfinance_data/"):
+        os.makedirs("./data/yfinance_data/")
+
+    if not os.path.exists("./data/yfinance_data_DT/"):
+        os.makedirs("./data/yfinance_data_DT/")
+
+    if not os.path.exists("./data/yfinance_data_model/"):
+        os.makedirs("./data/yfinance_data_model/")
+
+    if not os.path.exists("./data/yfinance_data_predict/"):
+        os.makedirs("./data/yfinance_data_predict/")
+
+    if not os.path.exists("./data/yfinance_output/"):
+        os.makedirs("./data/yfinance_output/")
+
+
 if __name__ == '__main__':
 
-    COMPUTE_MODEL = "NO_COMPUTE_MODEL"
-
+    COMPUTE_MODEL = "COMPUTE_MODEL"
 
     if (COMPUTE_MODEL == "COMPUTE_MODEL"):
+        mk_directories()
         clear_model_directory()
         clear_data_directory()
 
