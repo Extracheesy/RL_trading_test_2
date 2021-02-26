@@ -6,6 +6,14 @@
 
 !pip install stockstats==0.3.2
 
-!pip install google-colab
+#!pip install google-colab
 
+!python ./main.py section_1
 !python ./main.py section_2
+!python ./main.py section_3
+!python ./main.py section_4
+!python ./main.py section_5
+!python ./main.py section_6
+!python ./main.py section_7
+!python ./main.py section_8
+!python ./main.py section_9

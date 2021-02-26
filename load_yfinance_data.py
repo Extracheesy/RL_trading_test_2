@@ -1,4 +1,6 @@
 import sys
+import os, fnmatch
+import shutil
 
 # imports
 import yfinance as yf
@@ -248,7 +250,7 @@ def get_data_finance(letter_filter):
 
     cpt = 0
     for stock in df_filtered_ticker_list['Symbol']:
-        if(cpt < 10000):
+        if(cpt < 0):
             cpt = cpt + 1
         else:
             if( stock.startswith(letter_filter) ):
@@ -300,10 +302,12 @@ def get_data_finance(letter_filter):
                     SaveData(df_movementlist, "movmentlist_tmp_" + str(cpt) + ".csv")
 
     today = date.today()
-    SaveData(df_movementlist, letter_filter + "_movmentlist_final_" + str(today) + ".csv")
+    #SaveData(df_movementlist, letter_filter + "_movmentlist_final_" + str(today) + ".csv")
+    SaveData(df_movementlist, letter_filter + "_movmentlist_final_" + str(today))
+    print("file to copy: ", "./data/yfinance_data/" + letter_filter + "_movmentlist_final_" + str(today) + ".csv" )
+    shutil.copy( "./data/yfinance_data/" + letter_filter + "_movmentlist_final_" + str(today) + ".csv" , "../drive/MyDrive/colab_results")
 
-
-    files.download("./" + letter_filter + "_movmentlist_final_" + str(today) + ".csv")
+    #files.download("./" + letter_filter + "_movmentlist_final_" + str(today) + ".csv")
 
     global_end_stock = datetime.datetime.now()
     delta = global_end_stock - global_start_stock
