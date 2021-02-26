@@ -1,0 +1,5 @@
+# Export env
+pip list --format=freeze > req.txt
+
+# GIT Clone
+!git clone https://github.com/Extracheesy/RL_trading_test_2.git
