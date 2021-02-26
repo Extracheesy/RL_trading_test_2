@@ -249,10 +249,10 @@ def get_data_finance():
         if(cpt < 0):
             cpt = cpt + 1
         else:
-            #if( stock.startswith("B") ):
+            if( stock.startswith("A") ):
             #if (stock.startswith("A") or stock.startswith("B") or stock.startswith("C")):
             #if( stock == "AACG" ): AACQ
-            if (stock == "BHFAN"):
+            #if (stock == "BHFAN"):
 
                 start_stock = datetime.datetime.now()
                 print("start", stock)
