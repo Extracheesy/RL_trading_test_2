@@ -249,10 +249,10 @@ def get_data_finance():
         if(cpt < 0):
             cpt = cpt + 1
         else:
-            if( stock.startswith("B") ):
+            #if( stock.startswith("B") ):
             #if (stock.startswith("A") or stock.startswith("B") or stock.startswith("C")):
             #if( stock == "AACG" ): AACQ
-            #if (stock == "ADV"):
+            if (stock == "BHFAN"):
 
                 start_stock = datetime.datetime.now()
                 print("start", stock)
@@ -273,12 +273,15 @@ def get_data_finance():
 
                     # Compute Model
                     if (COMPUTE_MODEL == "COMPUTE_MODEL"):
+                        # MODEL selection not implemented
+                        COMPUTE_MODEL = "COMPUTE_MODEL"
+
+                    if (len(df_data_yf) > 402):
                         rmse, mape = train_model(stock, df_data_yf)
 
                         # Insert new row in dataframe
-                        df_movementstocklist["RMSE"] = round(rmse,2)
-                        df_movementstocklist["MAPE"] = round(mape,2)
-                    if (len(df_data_yf) > 402):
+                        df_movementstocklist["RMSE"] = round(rmse, 2)
+                        df_movementstocklist["MAPE"] = round(mape, 2)
                         TA = pred_predictor(stock, df_data_yf)
                     else:
                         TA = 0
