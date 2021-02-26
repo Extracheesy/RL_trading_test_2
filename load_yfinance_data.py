@@ -6,6 +6,8 @@ from pandas_datareader import data as pdr
 import pandas as pd
 import numpy as np
 
+from google.colab import files
+
 from build_DT import *
 from train_predict import *
 from predictor_predict import *
@@ -219,7 +221,7 @@ def get_DT_prediction(stock):
 
 
 
-def get_data_finance():
+def get_data_finance(letter_filter):
 
     COMPUTE_MODEL = "COMPUTE_MODEL"
 
@@ -246,10 +248,10 @@ def get_data_finance():
 
     cpt = 0
     for stock in df_filtered_ticker_list['Symbol']:
-        if(cpt < 0):
+        if(cpt < 10000):
             cpt = cpt + 1
         else:
-            if( stock.startswith("A") ):
+            if( stock.startswith(letter_filter) ):
             #if (stock.startswith("A") or stock.startswith("B") or stock.startswith("C")):
             #if( stock == "AACG" ): AACQ
             #if (stock == "BHFAN"):
@@ -297,7 +299,11 @@ def get_data_finance():
                 if ((cpt % 5) == 0):
                     SaveData(df_movementlist, "movmentlist_tmp_" + str(cpt) + ".csv")
 
-    SaveData(df_movementlist, "movmentlist_final.csv")
+    today = date.today()
+    SaveData(df_movementlist, letter_filter + "_movmentlist_final_" + str(today) + ".csv")
+
+
+    files.download("./" + letter_filter + "_movmentlist_final_" + str(today) + ".csv")
 
     global_end_stock = datetime.datetime.now()
     delta = global_end_stock - global_start_stock

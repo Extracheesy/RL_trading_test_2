@@ -5,6 +5,7 @@
 
 import sys
 import os, fnmatch
+import shutil
 import pandas as pd
 import numpy as np
 
@@ -68,6 +69,10 @@ def mk_directories():
 
     if not os.path.exists("./data"):
         os.makedirs("./data")
+    else:
+        shutil.rmtree("./data")
+        print("remove : ./data/*")
+        os.makedirs("./data")
 
     if not os.path.exists("./data/yfinance_data/"):
         os.makedirs("./data/yfinance_data/")
@@ -91,10 +96,55 @@ if __name__ == '__main__':
 
     if (COMPUTE_MODEL == "COMPUTE_MODEL"):
         mk_directories()
-        clear_model_directory()
-        clear_data_directory()
+        #clear_model_directory()
+        #clear_data_directory()
 
-    df_data_stock_list = get_data_finance()
+    section_1 = ["A","B","C"]
+    section_2 = ["D","E","F"]
+    section_3 = ["G","H","I"]
+    section_4 = ["J","K","L"]
+    section_5 = ["M","N","O"]
+    section_6 = ["P","Q","R"]
+    section_7 = ["S","T","U"]
+    section_8 = ["V","W","X"]
+    section_9 = ["Y","Z"]
+
+
+    print("This is the name of the script: ", sys.argv[0])
+    print("Number of arguments: ", len(sys.argv))
+    print("The arguments are: ", str(sys.argv))
+
+    if (str(sys.argv[1]) == "section_1"):
+        for filter in section_1:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_2"):
+        for filter in section_2:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_3"):
+        for filter in section_3:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_4"):
+        for filter in section_4:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_5"):
+        for filter in section_5:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_6"):
+        for filter in section_6:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_7"):
+        for filter in section_7:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_8"):
+        for filter in section_8:
+            df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_9"):
+        for filter in section_9:
+            df_data_stock_list = get_data_finance(filter)
+
+
+
+
 
     """
     fill_and_select_stock()
