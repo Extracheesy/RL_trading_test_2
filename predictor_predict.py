@@ -81,14 +81,14 @@ def pred_predictor(tick, df):
         df.loc[(len_df - 60 + i), "predicted_trend"] = predicted_price  - df.loc[(len_df - 60 + i - 1), "Close"]
         df.loc[(len_df - 60 + i), "trend_pred_vs_actual"] = df.loc[(len_df - 60 + i), "trend"] * df.loc[(len_df - 60 + i), "predicted_trend"]
         if df.loc[(len_df - 60 + i), "trend_pred_vs_actual"] < 0:
-            df.loc[(len_df - 60 + i), "trend_pred_vs_actual"] = -1
+            df.loc[(len_df - 60 + i), "trend_pred_vs_actual"] = 0
         else:
             df.loc[(len_df - 60 + i), "trend_pred_vs_actual"] = 1
 
 
     df.to_csv(output_filepath)
 
-    return (df.trend_pred_vs_actual.sum() + 30) * 100 / 60
+    return (df.trend_pred_vs_actual.sum()) * 100 / 60
 
 # if __name__ == '__main__':
 #    main()
