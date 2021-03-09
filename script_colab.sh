@@ -6,6 +6,8 @@
 
 !pip install stockstats==0.3.2
 
+!pip install Selenium
+
 #!pip install google-colab
 
 !python ./main.py section_1
