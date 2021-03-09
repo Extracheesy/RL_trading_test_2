@@ -108,7 +108,7 @@ if __name__ == '__main__':
     section_7 = ["S","T","U"]
     section_8 = ["V","W","X"]
     section_9 = ["Y","Z"]
-
+    section_all = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
     print("This is the name of the script: ", sys.argv[0])
     print("Number of arguments: ", len(sys.argv))
@@ -141,24 +141,10 @@ if __name__ == '__main__':
     if (str(sys.argv[1]) == "section_9"):
         for filter in section_9:
             df_data_stock_list = get_data_finance(filter)
+    if (str(sys.argv[1]) == "section_all"):
+        for filter in section_all:
+            df_data_stock_list = get_data_finance(filter)
 
-
-
-
-
-    """
-    fill_and_select_stock()
-
-    creat_env()
-
-    build_and_save_model()
-
-    split_data()
-
-    run_trading_strategy()
-
-    strategy_measure_evaluation()
-    """
     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

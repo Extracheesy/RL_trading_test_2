@@ -122,7 +122,7 @@ def get_list_most_actives(driver):
 
     return list_most_actives
 
-def scrape_yahoo_data_df(data_type):
+def get_YAHOO_ticker_list(data_type):
 
     DRIVER_PATH = "C:/Users/despo/chromedriver_win32/chromedriver.exe"
     driver = webdriver.Chrome(executable_path=DRIVER_PATH)
@@ -137,19 +137,21 @@ def scrape_yahoo_data_df(data_type):
     ticker_list = list_gainers + list_losers + list_trending_tickers + list_most_actives
 
     if data_type == "MIXED_DATA":
-        df = pd.DataFrame({'tic': ticker_list})
+        df = pd.DataFrame({'Symbol': ticker_list})
     elif data_type == "GAINER":
-        df = pd.DataFrame({'tic': list_gainers})
+        df = pd.DataFrame({'Symbol': list_gainers})
     elif data_type == "LOOSERS":
-        df = pd.DataFrame({'tic': list_losers})
+        df = pd.DataFrame({'Symbol': list_losers})
     elif data_type == "TRENDING":
-        df = pd.DataFrame({'tic': list_trending_tickers})
+        df = pd.DataFrame({'Symbol': list_trending_tickers})
     elif data_type == "ACTIVES":
-        df = pd.DataFrame({'tic': list_most_actives})
+        df = pd.DataFrame({'Symbol': list_most_actives})
 
     df = df.drop_duplicates()
-    # df = df.reset_index()
-    df = df.sort_values(['tic'], ignore_index=True)
+    #df = df.sort_values(['Symbol'], ignore_index=True)
+    df.sort_values(by='Symbol', inplace=True, ascending=True)
+    df = df.reset_index()
+    df = df.drop(['index'], axis=1)
     #df.to_csv("ticker_list_no_duplicate.csv", index=False)
 
     return df
