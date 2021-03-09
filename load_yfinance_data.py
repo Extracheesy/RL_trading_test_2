@@ -98,41 +98,6 @@ def get_Data_5days(ticker):
     SaveData(data, dataname)
     return data
 
-"""
-# High risers:
-def lookup_stockinfo(thestock):
-  try
-    return thestock.info
-  except IndexError:
-    return 0
-
-cutoff=float(80)
-for entry in movementlist:
-  if entry[2]>cutoff:
-    print("\n"+ str(entry))
-    thestock = yf.Ticker(str(entry[0]))
-    if entry[0]=='HJLIW':
-      print("no info")
-    else:
-      a = lookup_stockinfo(thestock)
-if a == 0:
-        print("no info")
-      else:
-        if a is None:
-          print("no info")
-        else:
-          if a == "":
-            print("no")
-          else:
-            print(a)
-            print('Up '+ str(entry[2]) + "%")
-            print(str(a['sector']))
-            print(str(a['longBusinessSummary']))
-            print("year high "+ str(a['fiftyTwoWeekHigh']))
-
-"""
-
-
 def get_NASDAQ_ticker_list():
 
     # list all NASDAQ stocks
