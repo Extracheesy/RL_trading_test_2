@@ -123,11 +123,23 @@ def get_list_most_actives(driver):
     return list_most_actives
 
 def get_YAHOO_ticker_list(data_type):
+    ENV_MODE = "COLAB"
 
-    DRIVER_PATH = "C:/Users/despo/chromedriver_win32/chromedriver.exe"
-    driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+    if (ENV_MODE == "PC"):
+        DRIVER_PATH = "C:/Users/despo/chromedriver_win32/chromedriver.exe"
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+
+    if (ENV_MODE == "COLAB"):
+        options = webdriver.ChromeOptions()
+        options.add_argument('-headless')
+        options.add_argument('-no-sandbox')
+        options.add_argument('-disable-dev-shm-usage')
+        driver = webdriver.Chrome('chromedriver', options=options)
+
     driver.get('https://finance.yahoo.com/gainers')
-    driver.find_element_by_name("agree").click()
+
+    if (ENV_MODE == "PC"):
+        driver.find_element_by_name("agree").click()
 
     list_gainers = get_list_gainers(driver)
     list_losers = get_list_losers(driver)

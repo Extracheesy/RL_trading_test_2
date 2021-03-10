@@ -10,6 +10,7 @@
 
 #!pip install google-colab
 
+!python ./main.py section_all
 !python ./main.py section_1
 !python ./main.py section_2
 !python ./main.py section_3
