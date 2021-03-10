@@ -8,13 +8,15 @@ from pandas_datareader import data as pdr
 import pandas as pd
 import numpy as np
 
-from google.colab import files
+#from google.colab import files
 
 from build_DT import *
 from train_predict import *
 from predictor_predict import *
 import datetime
 from datetime import date, timedelta
+
+from yscraping import get_YAHOO_ticker_list
 
 def lookup_fn(df, key_row, key_col):
 
@@ -191,9 +193,18 @@ def get_DT_prediction(stock):
 def get_data_finance(letter_filter):
 
     COMPUTE_MODEL = "COMPUTE_MODEL"
+    #DATA_SOURCE = "NASDAQ"
+    DATA_SOURCE = "SCRAPING"
 
-    df_ticker_list = get_NASDAQ_ticker_list()
-    df_ticker_list.drop([len(df_ticker_list) - 1], axis=0, inplace=True)
+    if DATA_SOURCE == "NASDAQ":
+        df_ticker_list = get_NASDAQ_ticker_list()
+        df_ticker_list.drop([len(df_ticker_list) - 1], axis=0, inplace=True)
+    elif DATA_SOURCE == "SCRAPING":
+        df_ticker_list = get_YAHOO_ticker_list("MIXED_DATA")
+        #df_ticker_list = get_YAHOO_ticker_list("GAINER")
+        #df_ticker_list = get_YAHOO_ticker_list("LOOSERS")
+        #df_ticker_list = get_YAHOO_ticker_list("TRENDING")
+        #df_ticker_list = get_YAHOO_ticker_list("ACTIVES")
 
     SaveData(df_ticker_list, "tickerlist.csv")
 
@@ -209,7 +220,10 @@ def get_data_finance(letter_filter):
                                     "Trend_Accuracy": [],
                                     "data_size": []})
 
-    df_filtered_ticker_list = df_ticker_list[ (df_ticker_list['Test Issue'] == "N")]
+    if DATA_SOURCE == "NASDAQ":
+        df_filtered_ticker_list = df_ticker_list[ (df_ticker_list['Test Issue'] == "N")]
+    else:
+        df_filtered_ticker_list = df_ticker_list
 
     global_start_stock = datetime.datetime.now()
 
