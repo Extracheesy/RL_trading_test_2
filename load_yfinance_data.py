@@ -8,7 +8,7 @@ from pandas_datareader import data as pdr
 import pandas as pd
 import numpy as np
 
-#from google.colab import files
+from google.colab import files
 
 from build_DT import *
 from train_predict import *
@@ -22,8 +22,6 @@ def lookup_fn(df, key_row, key_col):
 
     return df.iloc[key_row][key_col]
 
-    #except IndexError:
-    #return 0
 
 def remove_row(df,row):
     df.drop([row], axis=0, inplace=True)
@@ -178,17 +176,12 @@ def get_movment_list(stock):
 
     return df_movementlist
 
-
-
-
 def get_DT_prediction(stock):
 
     df_stock_data = getData_5years(stock)
     stock_DT_predicct = process_decision_tree(df_stock_data,stock)
 
     return stock_DT_predicct
-
-
 
 def get_data_finance(letter_filter):
 

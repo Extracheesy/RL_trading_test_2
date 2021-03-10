@@ -137,14 +137,19 @@ def get_YAHOO_ticker_list(data_type):
     ticker_list = list_gainers + list_losers + list_trending_tickers + list_most_actives
 
     if data_type == "MIXED_DATA":
+        print("Yahoo scraping MIXED_DATA")
         df = pd.DataFrame({'Symbol': ticker_list})
     elif data_type == "GAINER":
+        print("Yahoo scraping GAINER")
         df = pd.DataFrame({'Symbol': list_gainers})
     elif data_type == "LOOSERS":
+        print("Yahoo scraping LOOSERS")
         df = pd.DataFrame({'Symbol': list_losers})
     elif data_type == "TRENDING":
+        print("Yahoo scraping TRENDING")
         df = pd.DataFrame({'Symbol': list_trending_tickers})
     elif data_type == "ACTIVES":
+        print("Yahoo scraping ACTIVES")
         df = pd.DataFrame({'Symbol': list_most_actives})
 
     df = df.drop_duplicates()
