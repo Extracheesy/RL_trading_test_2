@@ -165,10 +165,8 @@ def get_YAHOO_ticker_list(data_type):
         df = pd.DataFrame({'Symbol': list_most_actives})
 
     df = df.drop_duplicates()
-    #df = df.sort_values(['Symbol'], ignore_index=True)
     df.sort_values(by='Symbol', inplace=True, ascending=True)
     df = df.reset_index()
     df = df.drop(['index'], axis=1)
-    #df.to_csv("ticker_list_no_duplicate.csv", index=False)
 
     return df
