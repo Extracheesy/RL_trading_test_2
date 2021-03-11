@@ -114,7 +114,7 @@ def get_x_y(data, N, offset):
 
     return X, y
 
-def fit_lstm(X_train, y_train, lstm_units = 50, optimizer = 'adam', epochs = 1,
+def fit_lstm(X_train, y_train, lstm_units = 50, optimizer = 'adam', epochs = 10,
              batch_size = 1, loss = 'mean_squared_error'):
     """
     Create, compile and fit LSTM network
