@@ -3,12 +3,6 @@
 # Press Maj+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-import sys
-import os, fnmatch
-import shutil
-import pandas as pd
-import numpy as np
-
 #from stockstats import StockDataFrame as Sdf
 from load_yfinance_data import *
 
