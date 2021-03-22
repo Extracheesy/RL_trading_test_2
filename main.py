@@ -9,8 +9,6 @@ import shutil
 import pandas as pd
 import numpy as np
 
-
-
 #from stockstats import StockDataFrame as Sdf
 from load_yfinance_data import *
 
