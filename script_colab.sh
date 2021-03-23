@@ -8,6 +8,8 @@
 
 !pip install Selenium
 
+pip install xgboost
+
 #!pip install google-colab
 
 !python ./main.py section_all

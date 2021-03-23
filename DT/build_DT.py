@@ -1,4 +1,6 @@
+from stockstats import StockDataFrame as Sdf
 from load_yfinance_data import *
+from predict_DT import *
 from datetime import date, timedelta
 
 def calcualte_price(df):
@@ -29,7 +31,8 @@ def add_trend(df_stock_price):
     # Get the difference in price from previous step
     delta = close.diff()
 
-    df_stock_price['trend'] = delta
+    #df_stock_price['trend'] = delta
+
 
     df_stock_price = df_stock_price.replace([np.inf, -np.inf], np.nan).dropna()
     df_stock_price = df_stock_price.reset_index(drop=True)
@@ -37,18 +40,36 @@ def add_trend(df_stock_price):
 
     len_df = len(df_stock_price)
 
-    for i in range(0,len_df,1):
-        df_stock_price.loc[i,"trend"] = df_stock_price.loc[i,"trend"] * (-1)
-        if(df_stock_price.loc[i,"trend"] <= 0):
-            df_stock_price.loc[i, "trend"] = 0 # 0 - trend is going down
+    #for i in range(0,len_df,1):
+    #    df_stock_price.loc[i,"trend"] = df_stock_price.loc[i,"trend"] * (-1)
+    #    if(df_stock_price.loc[i,"trend"] <= 0):
+    #        df_stock_price.loc[i, "trend"] = 0 # 0 - trend is going down
+    #    else:
+    #        df_stock_price.loc[i, "trend"] = 1 # 1 - trend is going up
+
+    df_stock_price.insert(len(df_stock_price.columns), "trend", 0)
+    df_stock_price.insert(len(df_stock_price.columns), "trend_d+1", 0)
+
+    for i in range(0, len_df, 1):
+        df_stock_price.loc[i, "trend"] = df_stock_price.loc[i, "Close"] - df_stock_price.loc[i, "Open"]
+        if (df_stock_price.loc[i, "trend"] <= 0):
+            df_stock_price.loc[i, "trend"] = 0  # 0 - trend is going down
         else:
-            df_stock_price.loc[i, "trend"] = 1 # 1 - trend is going up
+            df_stock_price.loc[i, "trend"] = 1  # 1 - trend is going up
+
+        if i>0:
+            df_stock_price.loc[i - 1, "trend_d+1"] = df_stock_price.loc[i, "trend"]
 
 
     df_stock_price.drop([0,1,2,3,4,5,6,7,8,9,10], axis=0, inplace=True)
+    df_stock_price.drop([len_df - 1], axis=0, inplace=True)
 
     # reset index
     df_stock_price.reset_index(drop=True, inplace=True)
+
+    df_stock_price["trend"] = df_stock_price["trend_d+1"]
+
+    df_stock_price.pop('trend_d+1')
 
     return df_stock_price
 
@@ -299,7 +320,7 @@ def process_decision_tree(stock):
     df = get_Data_5years(stock)
 
     if (len(df)<2):
-        return 0, len(df), df
+        return 0, 0, len(df), df
 
     df = DT_load_process_data(df)
 
@@ -309,12 +330,12 @@ def process_decision_tree(stock):
     df_yf = df.copy()
 
     if (len(df) < 70):
-        return 0 , 0, df
+        return 0, 0 , 0, df
 
     df = DT_process_trend(df)
 
     SaveDataDT(df, stock + "_DT_" + str(today))
 
-    DT_results = main_DT_train(df)
+    DT_results, tuning_results = main_DT_train(df)
 
-    return DT_results, len(df), df_yf
+    return DT_results, tuning_results, len(df), df_yf

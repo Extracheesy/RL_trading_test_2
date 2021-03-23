@@ -2,10 +2,16 @@
 
 # Press Maj+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import sys
 
-#from stockstats import StockDataFrame as Sdf
+sys.path.append("./load_yfinance/")
+sys.path.append("./predict/")
+sys.path.append("./scraping/")
+sys.path.append("./init/")
+sys.path.append("./DT/")
+
 from load_yfinance_data import *
-
+import config
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -84,23 +90,20 @@ def mk_directories():
 
 if __name__ == '__main__':
 
-    COMPUTE_MODEL = "COMPUTE_MODEL"
+    mk_directories()
+    #clear_model_directory()
+    #clear_data_directory()
 
-    if (COMPUTE_MODEL == "COMPUTE_MODEL"):
-        mk_directories()
-        #clear_model_directory()
-        #clear_data_directory()
-
-    section_1 = ["A","B","C"]
-    section_2 = ["D","E","F"]
-    section_3 = ["G","H","I"]
-    section_4 = ["J","K","L"]
-    section_5 = ["M","N","O"]
-    section_6 = ["P","Q","R"]
-    section_7 = ["S","T","U"]
-    section_8 = ["V","W","X"]
-    section_9 = ["Y","Z"]
-    section_all = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    section_1 = ["GAINERS"]
+    section_2 = ["TRENDING"]
+    section_3 = ["CAC40"]
+    section_4 = ["DJI"]
+    section_5 = ["NASDAQ"]
+    section_6 = ["ACTIVES"]
+    section_7 = ["LOOSERS"]
+    section_8 = ["DAX"]
+    section_9 = ["SP500"]
+    section_all = ["ALL"]
 
     print("This is the name of the script: ", sys.argv[0])
     print("Number of arguments: ", len(sys.argv))

@@ -8,12 +8,11 @@ from pandas_datareader import data as pdr
 import pandas as pd
 import numpy as np
 
-#from google.colab import files
-
 from build_DT import *
 from train_predict import *
 from predictor_predict import *
 import datetime
+import config
 from datetime import date, timedelta
 
 from yscraping import get_YAHOO_ticker_list
@@ -58,6 +57,7 @@ def get_Data_5days(ticker):
                                          "delta_%_o_c_5d": [0],
                                          "delta_%_o_c_1d": [0],
                                          "DT_results": [0],
+                                         "DT_tuning": ["0"],
                                          "RMSE": [0],
                                          "MAPE": [0],
                                          "Trend_Accuracy": [0],
@@ -121,6 +121,7 @@ def get_movment_list(stock):
                                        "delta_%_o_c_5d": [0],
                                        "delta_%_o_c_1d": [0],
                                        "DT_results": [0],
+                                       "DT_tuning": ["0"],
                                        "RMSE": [0],
                                        "MAPE": [0],
                                        "Trend_Accuracy": [0],
@@ -167,6 +168,7 @@ def get_movment_list(stock):
                                     "delta_%_o_c_5d": [round(deltaprice,2)],
                                     "delta_%_o_c_1d": [round(deltaprice1d,2)],
                                     "DT_results": [0],
+                                    "DT_tuning": ["0"],
                                     "RMSE": [0],
                                     "MAPE": [0],
                                     "Trend_Accuracy": [0],
@@ -185,19 +187,13 @@ def get_DT_prediction(stock):
 
 def get_data_finance(letter_filter):
 
-    COMPUTE_MODEL = "COMPUTE_MODEL"
-    #DATA_SOURCE = "NASDAQ"
-    DATA_SOURCE = "SCRAPING"
+    if config.DATA_SOURCE == "READ_CSV_FROM_DATABASE":
+        df_ticker_list = pd.read_csv("./database/tickerlist_2021-03-21.csv")
+    elif config.DATA_SOURCE == "SCRAPING":
+        df_ticker_list = get_YAHOO_ticker_list()
 
-    if DATA_SOURCE == "NASDAQ":
-        df_ticker_list = get_NASDAQ_ticker_list()
-        df_ticker_list.drop([len(df_ticker_list) - 1], axis=0, inplace=True)
-    elif DATA_SOURCE == "SCRAPING":
-        df_ticker_list = get_YAHOO_ticker_list("MIXED_DATA")
-        #df_ticker_list = get_YAHOO_ticker_list("GAINER")
-        #df_ticker_list = get_YAHOO_ticker_list("LOOSERS")
-        #df_ticker_list = get_YAHOO_ticker_list("TRENDING")
-        #df_ticker_list = get_YAHOO_ticker_list("ACTIVES")
+    if letter_filter != "ALL":
+        df_ticker_list = df_ticker_list[df_ticker_list['Type'] == letter_filter]
 
     SaveData(df_ticker_list, "tickerlist.csv")
 
@@ -208,57 +204,52 @@ def get_data_finance(letter_filter):
                                     "delta_%_o_c_5d": [],
                                     "delta_%_o_c_1d": [],
                                     "DT_results": [],
+                                    "DT_tuning": [],
                                     "RMSE": [],
                                     "MAPE": [],
                                     "Trend_Accuracy": [],
                                     "data_size": []})
 
-    if DATA_SOURCE == "NASDAQ":
-        df_filtered_ticker_list = df_ticker_list[ (df_ticker_list['Test Issue'] == "N")]
-    else:
-        df_filtered_ticker_list = df_ticker_list
-
     global_start_stock = datetime.datetime.now()
 
     cpt = 0
-    for stock in df_filtered_ticker_list['Symbol']:
+    for stock in df_ticker_list['Symbol']:
         if(cpt < 0):
             cpt = cpt + 1
         else:
-            if( stock.startswith(letter_filter) ):
-            #if (stock.startswith("A") or stock.startswith("B") or stock.startswith("C")):
-            #if( stock == "AACG" ): AACQ
-            #if (stock == "BHFAN"):
+            if( True ):  # For Debug CD
+            #if (stock == "AGIO"):
 
                 start_stock = datetime.datetime.now()
                 print("start", stock)
 
                 df_movementstocklist = get_movment_list(stock)
 
-                DT_result , data_len, df_data_yf = process_decision_tree(stock)
+                DT_results, DT_tuning, data_len, df_data_yf = process_decision_tree(stock)
 
                 if (data_len < 2):
-                    df_movementstocklist["DT_results"] = DT_result
+                    df_movementstocklist["DT_results"] = DT_results
+                    df_movementstocklist["DT_tuning"] = DT_tuning
                     df_movementstocklist["data_size"] = round(data_len / 253, 2)
                     df_movementstocklist["RMSE"] = 0
                     df_movementstocklist["MAPE"] = 0
                     df_movementstocklist["Trend_Accuracy"] = 0
                 else:
-                    df_movementstocklist["DT_results"] = DT_result
+                    df_movementstocklist["DT_results"] = DT_results
+                    df_movementstocklist["DT_tuning"] = DT_tuning
                     df_movementstocklist["data_size"] = round(data_len / 253, 2)
 
                     # Compute Model
-                    if (COMPUTE_MODEL == "COMPUTE_MODEL"):
-                        # MODEL selection not implemented
-                        COMPUTE_MODEL = "COMPUTE_MODEL"
+                    if (config.COMPUTE_MODEL == "PREDICT_LSTM"):
+                        if (len(df_data_yf) > 402):
+                            rmse, mape = train_model(stock, df_data_yf)
 
-                    if (len(df_data_yf) > 402):
-                        rmse, mape = train_model(stock, df_data_yf)
-
-                        # Insert new row in dataframe
-                        df_movementstocklist["RMSE"] = round(rmse, 2)
-                        df_movementstocklist["MAPE"] = round(mape, 2)
-                        TA = pred_predictor(stock, df_data_yf)
+                            # Insert new row in dataframe
+                            df_movementstocklist["RMSE"] = round(rmse, 2)
+                            df_movementstocklist["MAPE"] = round(mape, 2)
+                            TA = pred_predictor(stock, df_data_yf)
+                        else:
+                            TA = 0
                     else:
                         TA = 0
                     df_movementstocklist["Trend_Accuracy"] = round(TA, 2)
@@ -277,7 +268,9 @@ def get_data_finance(letter_filter):
     #SaveData(df_movementlist, letter_filter + "_movmentlist_final_" + str(today) + ".csv")
     SaveData(df_movementlist, letter_filter + "_movmentlist_final_" + str(today))
     print("file to copy: ", "./data/yfinance_data/" + letter_filter + "_movmentlist_final_" + str(today) + ".csv" )
-    shutil.copy( "./data/yfinance_data/" + letter_filter + "_movmentlist_final_" + str(today) + ".csv" , "../drive/MyDrive/colab_results")
+
+    if (config.COLAB == True):
+        shutil.copy( "./data/yfinance_data/" + letter_filter + "_movmentlist_final_" + str(today) + ".csv" , "../drive/MyDrive/colab_results")
 
     #files.download("./" + letter_filter + "_movmentlist_final_" + str(today) + ".csv")
 
