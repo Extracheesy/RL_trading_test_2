@@ -69,6 +69,6 @@ def main_DT_train(df):
         result = "DTR"
     else:
         accuracy = max_score_XGB
-        result = "XGB_depth_" + str(md) + "_est_" + str(n)
+        result = "XGB_depth_" + str(best_depth_XGB) + "_est_" + str(best_estimator_XGB)
 
     return round(accuracy / len_y_test * 100), result

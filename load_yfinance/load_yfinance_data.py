@@ -194,8 +194,11 @@ def get_data_finance(letter_filter):
 
     if letter_filter != "ALL":
         df_ticker_list = df_ticker_list[df_ticker_list['Type'] == letter_filter]
+        SaveData(df_ticker_list, "tickerlist.csv")
+    else:
+        SaveData(df_ticker_list, "tickerlist.csv")
+        df_ticker_list = df_ticker_list.drop_duplicates(subset=['Symbol'])
 
-    SaveData(df_ticker_list, "tickerlist.csv")
 
     # Calling DataFrame constructor
     df_movementlist = pd.DataFrame({"ticker": [],
