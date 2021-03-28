@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import joblib
+import config
 
 # for reproducibility of our results
 np.random.seed(1234)
@@ -233,10 +234,11 @@ def save_model(model, model_filepath):
 
 def train_model(tick, tick_data_file):
 
-    # output model filepath in.pkl
-    model_filepath = "./data/yfinance_model/model_" + tick + ".pkl"
-    # output data scaler object filepath in.gz
-    scaler_filepath = "./data/yfinance_model/scaler_" + tick + ".gz"
+    if (config.SAVE_MODEL == "SAVE_LSTM_MODEL"):
+        # output model filepath in.pkl
+        model_filepath = "./data/yfinance_model/model_" + tick + ".pkl"
+        # output data scaler object filepath in.gz
+        scaler_filepath = "./data/yfinance_model/scaler_" + tick + ".gz"
 
     # test size ratio
     test_size = 0.2
@@ -270,11 +272,12 @@ def train_model(tick, tick_data_file):
     print('Evaluate model performance...')
     rmse_lstm, mape_lstm = model_performance(test, closing_price)
 
-    print('Saving model...')
-    save_model(model, model_filepath)
+    if (config.SAVE_MODEL == "SAVE_LSTM_MODEL"):
+        print('Saving model...')
+        save_model(model, model_filepath)
 
-    print('Saving scaler file...')
-    joblib.dump(scaler, scaler_filepath)
+        print('Saving scaler file...')
+        joblib.dump(scaler, scaler_filepath)
 
-    return rmse_lstm, mape_lstm
+    return rmse_lstm, mape_lstm, model, scaler
 

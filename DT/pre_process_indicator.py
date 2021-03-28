@@ -3,6 +3,8 @@ from load_yfinance_data import *
 from predict_DT import *
 from datetime import date, timedelta
 
+import config
+
 def calcualte_price(df):
     """
     calcualte adjusted close price, open-high-low price and volume
@@ -53,9 +55,9 @@ def add_trend(df_stock_price):
     for i in range(0, len_df, 1):
         df_stock_price.loc[i, "trend"] = df_stock_price.loc[i, "Close"] - df_stock_price.loc[i, "Open"]
         if (df_stock_price.loc[i, "trend"] <= 0):
-            df_stock_price.loc[i, "trend"] = 0  # 0 - trend is going down
+            df_stock_price.loc[i, "trend"] = int(0)  # 0 - trend is going down
         else:
-            df_stock_price.loc[i, "trend"] = 1  # 1 - trend is going up
+            df_stock_price.loc[i, "trend"] = int(1)  # 1 - trend is going up
 
         if i>0:
             df_stock_price.loc[i - 1, "trend_d+1"] = df_stock_price.loc[i, "trend"]
@@ -273,38 +275,7 @@ def DT_process_trend(df):
     df = add_trend(df)
     return df
 
-def get_Data_5years(ticker):
 
-    # We can get data by our choice by giving days bracket
-    #start_date= str("2017") + "-" + str("01") + "-" + str("01")
-
-    nb_df_row = 0
-    nb_years = 5 * 52 # 5 * 12 months for 5 years
-    today = date.today()
-
-    start_date = today - timedelta(weeks=nb_years)
-
-    nb_try = 0
-    while True:
-        try:
-            data = pdr.get_data_yahoo(ticker, start=start_date, end=today)
-            break
-        except KeyError:
-            print("I got a KeyError for: ", ticker)
-            nb_try = nb_try + 1
-            if (nb_try > 5):
-                df_empty = pd.DataFrame({"ticker": [ticker],
-                                         "nb_days": [0],
-                                         "delta_%_h_l_5d": [0],
-                                         "delta_%_o_c_5d": [0],
-                                         "delta_%_o_c_1d": [0],
-                                         "DT_results": [0],
-                                         "RMSE": [0],
-                                         "MAPE": [0],
-                                         "Trend_Accuracy": [0],
-                                         "data_size": [0]})
-                return df_empty
-    return data
 
 
 def SaveDataDT(df, filename):
@@ -315,27 +286,27 @@ def SaveDataPredict(df, filename):
 
     df.to_csv("./data/yfinance_data_predict/" + filename + ".csv")
 
-def process_decision_tree(stock):
 
-    df = get_Data_5years(stock)
 
-    if (len(df)<2):
-        return 0, 0, len(df), df
+def pre_process_indictor_data(stock, df):
 
     df = DT_load_process_data(df)
 
     today = date.today()
-    SaveDataPredict(df, stock + "_" + str(today))
+
+    if(config.SAVE_PRE_PROCESSED_DATA == True):
+        SaveDataPredict(df, stock + "_" + str(today))
 
     df_yf = df.copy()
 
-    if (len(df) < 70):
-        return 0, 0 , 0, df
-
     df = DT_process_trend(df)
 
-    SaveDataDT(df, stock + "_DT_" + str(today))
+    if(config.SAVE_PRE_PROCESSED_DATA == True):
+        SaveDataDT(df, stock + "_DT_" + str(today))
 
-    DT_results, tuning_results = main_DT_train(df)
+    return df
 
-    return DT_results, tuning_results, len(df), df_yf
+
+
+
+

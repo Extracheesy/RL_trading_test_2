@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pickle
 import joblib
+import config
 
 # import function defined earlier in train.py
 from numpy.core._multiarray_umath import ndarray
@@ -44,15 +45,17 @@ def pred_closing_price(df, scaler, model):
 
     return predicted_price
 
-def pred_predictor(tick, df):
+def pred_predictor(tick, df, model, scaler):
 
-    model_filepath = "./data/yfinance_model/model_" + tick + ".pkl"
-    scaler_filepath = "./data/yfinance_model/scaler_" + tick + ".gz"
+
+    # model_filepath = "./data/yfinance_model/model_" + tick + ".pkl"
+    # scaler_filepath = "./data/yfinance_model/scaler_" + tick + ".gz"
     output_filepath = "./data/yfinance_output/" + "output" + tick + ".csv"
 
-    # load pkl model file
-    print('Loading model...')
-    model = load_model(model_filepath)
+    if (config.SAVE_MODEL == "SAVE_LSTM_MODEL"):
+        # load pkl model file
+        print('Loading model...')
+        model = load_model(model_filepath)
 
     len_df = len(df)
 
@@ -61,18 +64,16 @@ def pred_predictor(tick, df):
     df.insert(9, "predicted_trend", 0)
     df.insert(10, "trend_pred_vs_actual", 0)
 
-    print('Loading scaler file...')
-    my_scaler = joblib.load(scaler_filepath)
+    if (config.SAVE_MODEL == "SAVE_LSTM_MODEL"):
+        print('Loading scaler file...')
+        scaler = joblib.load(scaler_filepath)
 
     for i in range(0, 60, 1):
-        # filter datas
 
-        if i == 52:
-            print ("debug")
         df_filtered = df[ (df.index < (len_df - 60 + i) )]
 
         #print('Predicting closing stock price...')
-        predicted_price = pred_closing_price(df_filtered, my_scaler, model)
+        predicted_price = pred_closing_price(df_filtered, scaler, model)
 
         #print('Predicted price: '+'$ '+str("{:.2f}".format(predicted_price)))
 
@@ -85,8 +86,8 @@ def pred_predictor(tick, df):
         else:
             df.loc[(len_df - 60 + i), "trend_pred_vs_actual"] = 1
 
-
-    df.to_csv(output_filepath)
+    if (config.SAVE_MODEL == "SAVE_LSTM_MODEL"):
+        df.to_csv(output_filepath)
 
     return (df.trend_pred_vs_actual.sum()) * 100 / 60
 
