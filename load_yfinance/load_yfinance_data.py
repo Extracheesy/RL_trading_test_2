@@ -51,8 +51,8 @@ def get_data_finance(filter):
         if(cpt < 0):
             cpt = cpt + 1
         else:
-            if(config.DEBUG_FOCRCE_STOCK == True):
-                stock == "AAPL"
+            if(config.DEBUG_FORCE_STOCK == True):
+                stock = "AAPL"
 
             start_stock = datetime.datetime.now()
             print("start", stock," time: ",start_stock)
@@ -62,7 +62,7 @@ def get_data_finance(filter):
 
             # if not enough data available in regard with requested Stock
             if(len(df_full_data_stock) < 100):
-                df_movement_stock_list = empty_df_movement_list(stock)
+                print("Not enough data available in regard with requested Stock: ",stock)
             else:
 
                 df_movement_stock_list["data_size"] = round(len(df_full_data_stock) / 253, 2)
@@ -72,15 +72,13 @@ def get_data_finance(filter):
                 if (config.COMPUTE_DT == True):
                     df_movement_stock_list = run_DT_prediction(df_full_data_stock, df_movement_stock_list)
 
-
-
                 # Compute Model
                 if (config.COMPUTE_MODEL == "PREDICT_LSTM"):
-                    if (len(df_data_yf) > 402):
-                        rmse, mape, lstm_model, lstm_scaler = train_model(stock, df_data_yf)
+                    if (len(df_full_data_stock) > 402):
+                        rmse, mape, lstm_model, lstm_scaler = train_model(stock, df_full_data_stock)
 
                         # Insert new row in dataframe
-                        TA = pred_predictor(stock, df_data_yf, lstm_model, lstm_scaler)
+                        TA = pred_predictor(stock, df_full_data_stock, lstm_model, lstm_scaler)
                     else:
                         TA = 0
                 else:

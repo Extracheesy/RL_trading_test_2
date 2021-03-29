@@ -26,6 +26,12 @@ def new_df_movement_list():
                        "delta_%_o_c_5d": [],
                        "delta_%_o_c_1d": [],
                        "DTR": [],
+                       "SVM": [],
+                       "RF": [],
+                       "ADABOOST": [],
+                       "GRBOOST": [],
+                       "GNaiveB": [],
+                       "KNeighbors": [],
                        "XGBOOST": [],
                        "lightGBM": [],
                        "LSTM": [],
@@ -38,14 +44,20 @@ def empty_df_movement_list(stock):
 
     df = pd.DataFrame({"ticker": [stock],
                        "nb_days": [0],
-                       "data_size": [0],
-                       "delta_%_h_l_5d": [0],
-                       "delta_%_o_c_5d": [0],
-                       "delta_%_o_c_1d": [0],
-                       "DTR": [0],
-                       "XGBOOST": ["0"],
-                       "lightGBM": [],
-                       "LSTM": [0]
+                       "data_size": [0.0],
+                       "delta_%_h_l_5d": [0.0],
+                       "delta_%_o_c_5d": [0.0],
+                       "delta_%_o_c_1d": [0.0],
+                       "DTR": [0.0],
+                       "SVM": [0.0],
+                       "RF": [0.0],
+                       "ADABOOST": [0.0],
+                       "GRBOOST": [0.0],
+                       "GNaiveB": [0.0],
+                       "KNeighbors": [0.0],
+                       "XGBOOST": [0.0],
+                       "lightGBM": [0.0],
+                       "LSTM": [0.0]
                        })
 
     return df

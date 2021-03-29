@@ -9,7 +9,7 @@ from sklearn.metrics import confusion_matrix
 
 
 
-def predict_lightGBM(x_train, x_test, y_train, y_test):
+def get_lightGBM_prediction(x_train, x_test, y_train, y_test):
 
     #y_train['0'] = y_train['0'].apply(np.int64)
 
@@ -156,10 +156,9 @@ def predict_lightGBM(x_train, x_test, y_train, y_test):
     # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
     # Accuracy
-    accuracy = accuracy_score(y_pred, y_test)
-
+    accuracy = accuracy_score(y_pred, y_test, normalize=False)
 
     print(cm)
-    print(accuracy)
 
-    return(accuracy)
+
+    return round(accuracy / len(y_test) * 100)

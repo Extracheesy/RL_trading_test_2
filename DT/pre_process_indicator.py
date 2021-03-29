@@ -2,6 +2,7 @@ from stockstats import StockDataFrame as Sdf
 from load_yfinance_data import *
 from predict_DT import *
 from datetime import date, timedelta
+from df_tools import SaveData
 
 import config
 
@@ -61,6 +62,14 @@ def add_trend(df_stock_price):
 
         if i>0:
             df_stock_price.loc[i - 1, "trend_d+1"] = df_stock_price.loc[i, "trend"]
+
+
+    target_raw = (df_stock_price['Adj Close'].shift(-1) / df_stock_price['Adj Close']) - 1
+
+    target_raw[target_raw > 0] = 1
+    target_raw[target_raw <= 0] = 0
+
+    df_stock_price.insert(len(df_stock_price.columns), "target", target_raw)
 
 
     df_stock_price.drop([0,1,2,3,4,5,6,7,8,9,10], axis=0, inplace=True)
@@ -273,10 +282,8 @@ def DT_process_trend(df):
 
     df = add_technical_indicator(df)
     df = add_trend(df)
+
     return df
-
-
-
 
 def SaveDataDT(df, filename):
 
@@ -286,23 +293,16 @@ def SaveDataPredict(df, filename):
 
     df.to_csv("./data/yfinance_data_predict/" + filename + ".csv")
 
-
-
 def pre_process_indictor_data(stock, df):
 
     df = DT_load_process_data(df)
 
     today = date.today()
 
-    if(config.SAVE_PRE_PROCESSED_DATA == True):
-        SaveDataPredict(df, stock + "_" + str(today))
-
-    df_yf = df.copy()
-
     df = DT_process_trend(df)
 
     if(config.SAVE_PRE_PROCESSED_DATA == True):
-        SaveDataDT(df, stock + "_DT_" + str(today))
+        SaveData(df, stock + "_" + str(today))
 
     return df
 

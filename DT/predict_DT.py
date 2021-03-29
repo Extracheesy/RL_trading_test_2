@@ -5,11 +5,16 @@ import numpy as np
 import config
 
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 #from train_predict import *
-from predict_lightgbm import predict_lightGBM
+from sklearn import svm
 
 def main_DT_train(df):
 
@@ -85,19 +90,19 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
 
     ################### DTR ###################
-    Classifier_DTR = DecisionTreeRegressor()
-    Classifier_DTR.fit(X_train, Y_train)
+    Classifier = DecisionTreeRegressor()
+    Classifier.fit(X_train, Y_train)
 
-    Result_predicted_DTR = Classifier_DTR.predict(X_test)
-    Result_predicted_DTR = Result_predicted_DTR.reshape(-1, 1)
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
 
-    result_DTR = pd.DataFrame(Result_predicted_DTR)
-    result_DTR.reset_index(drop=True, inplace=True)
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
 
-    predictions = result_DTR[0].to_list()
-    accuracy_DTR = accuracy_score(Y_test, predictions, normalize=False)
+    predictions = result[0].to_list()
+    accuracy = accuracy_score(Y_test, predictions, normalize=False)
 
-    return round(accuracy_DTR / len_y_test * 100)
+    return round(accuracy / len_y_test * 100)
 
 
 
@@ -140,4 +145,122 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
 
 
+def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
 
+    len_y_test = len(Y_test)
+
+    accuracy = 0
+    ################### SVM ###################
+    for kernel in ['linear','rbf']:
+        Classifier_SVM = svm.SVC(kernel = kernel)
+        Classifier_SVM.fit(X_train, Y_train)
+
+        Result_predicted_SVM = Classifier_SVM.predict(X_test)
+        Result_predicted_SVM = Result_predicted_SVM.reshape(-1, 1)
+
+        result_SVM = pd.DataFrame(Result_predicted_SVM)
+        result_SVM.reset_index(drop=True, inplace=True)
+
+        predictions = result_SVM[0].to_list()
+        accuracy_SVM = accuracy_score(Y_test, predictions, normalize=False)
+
+        if accuracy_SVM > accuracy:
+            accuracy = accuracy_SVM
+
+    return round(accuracy / len_y_test * 100)
+
+def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test, n_neighbors):
+
+    len_y_test = len(Y_test)
+
+    ################### KNeighbors ###################
+    Classifier = KNeighborsClassifier(n_neighbors = n_neighbors)
+    Classifier.fit(X_train, Y_train)
+
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
+
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
+
+    predictions = result[0].to_list()
+    accuracy = accuracy_score(Y_test, predictions, normalize=False)
+
+    return round(accuracy / len_y_test * 100)
+
+
+def get_RF_prediction(X_train, X_test, Y_train, Y_test, n_estimators):
+
+    len_y_test = len(Y_test)
+
+    ################### Random Forest ###################
+    Classifier = RandomForestClassifier(n_estimators = n_estimators)
+    Classifier.fit(X_train, Y_train)
+
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
+
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
+
+    predictions = result[0].to_list()
+    accuracy = accuracy_score(Y_test, predictions, normalize=False)
+
+    return round(accuracy / len_y_test * 100)
+
+def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test, n_estimators):
+
+    len_y_test = len(Y_test)
+
+    ################### ADABOOST ###################
+    Classifier = AdaBoostClassifier(n_estimators = n_estimators)
+    Classifier.fit(X_train, Y_train)
+
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
+
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
+
+    predictions = result[0].to_list()
+    accuracy = accuracy_score(Y_test, predictions, normalize=False)
+
+    return round(accuracy / len_y_test * 100)
+
+def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test, n_estimators):
+
+    len_y_test = len(Y_test)
+
+    ################### GradientBoostingClassifier ###################
+    Classifier = GradientBoostingClassifier(n_estimators = n_estimators)
+    Classifier.fit(X_train, Y_train)
+
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
+
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
+
+    predictions = result[0].to_list()
+    accuracy = accuracy_score(Y_test, predictions, normalize=False)
+
+    return round(accuracy / len_y_test * 100)
+
+def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test, n_estimators):
+
+    len_y_test = len(Y_test)
+
+    ################### AdaBoost Classifier with NaiveBayes base ###################
+    Classifier = AdaBoostClassifier(n_estimators=n_estimators, base_estimator=GaussianNB())
+    Classifier.fit(X_train, Y_train)
+
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
+
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
+
+    predictions = result[0].to_list()
+    accuracy = accuracy_score(Y_test, predictions, normalize=False)
+
+    return round(accuracy / len_y_test * 100)

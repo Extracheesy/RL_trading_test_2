@@ -4,6 +4,7 @@ import config
 import pandas as pd
 import numpy as np
 from df_tools import new_df_movement_list
+from df_tools import empty_df_movement_list
 from pandas_datareader import data as pdr
 from df_tools import remove_row
 from df_tools import lookup_fn
@@ -75,7 +76,7 @@ def get_Data_5years(ticker):
     # We can get data by our choice by giving days bracket
     #start_date= str("2017") + "-" + str("01") + "-" + str("01")
 
-    nb_years = 5 * 52 # 5 * 12 months for 5 years
+    nb_years = config.LOAD_YEARS
     today = date.today()
 
     start_date = today - timedelta(weeks=nb_years)
@@ -135,11 +136,12 @@ def get_movment_list_5D(stock):
     else:
         deltaprice1d = 100 * (Close - Open1d) / Open1d
 
-    df_movementlist = new_df_movement_list()
-    df_movementlist["ticker"] = stock
-    df_movementlist["nb_days"] = len_df
-    df_movementlist["delta_%_h_l_5d"] = round(deltapercent,2)
-    df_movementlist["delta_%_o_c_5d"] = round(deltaprice,2)
-    df_movementlist["delta_%_o_c_1d"] = round(deltaprice1d,2)
+    #df_movementlist = new_df_movement_list()
+    df_movementlist = empty_df_movement_list(stock)
+    df_movementlist["ticker"][0] = stock
+    df_movementlist["nb_days"][0] = len_df
+    df_movementlist["delta_%_h_l_5d"][0] = round(deltapercent,2)
+    df_movementlist["delta_%_o_c_5d"][0] = round(deltaprice,2)
+    df_movementlist["delta_%_o_c_1d"][0] = round(deltaprice1d,2)
 
     return df_movementlist
