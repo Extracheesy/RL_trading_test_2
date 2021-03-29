@@ -73,7 +73,7 @@ def get_data_finance(filter):
                     df_movement_stock_list = run_DT_prediction(df_full_data_stock, df_movement_stock_list)
 
                 # Compute Model
-                if (config.COMPUTE_MODEL == "PREDICT_LSTM"):
+                if (config.COMPUTE_PREDICT_MODEL == True):
                     if (len(df_full_data_stock) > 402):
                         rmse, mape, lstm_model, lstm_scaler = train_model(stock, df_full_data_stock)
 
