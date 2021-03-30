@@ -97,8 +97,7 @@ def get_data_finance(filter):
                 SaveData(df_movement_list, "movmentlist_tmp_" + str(cpt) + ".csv")
 
                 if (config.COLAB == True):
-                    shutil.copy("./data/yfinance_data/" + "movmentlist_tmp_" + str(cpt) + ".csv",
-                                "../drive/MyDrive/colab_results")
+                    shutil.copy("./data/yfinance_data/" + "movmentlist_tmp_" + str(cpt) + ".csv","../drive/MyDrive/colab_results")
 
     today = date.today()
     #SaveData(df_movement_list, filter + "_movmentlist_final_" + str(today) + ".csv")

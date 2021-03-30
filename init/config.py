@@ -1,5 +1,5 @@
 LOAD_YEARS = 10 * 52 # 5 * 12 months for 5 years
-MODULO_BACKUP = 1  #frequence of backup (every x file performed...)
+MODULO_BACKUP = 2  #frequence of backup (every x file performed...)
 
 #COMPUTE_PREDICT_MODEL = True
 COMPUTE_PREDICT_MODEL = False
@@ -29,8 +29,8 @@ LIGHTGBM = True
 #LIGHTGBM = False
 
 
-COLAB = False
-#COLAB = True
+#COLAB = False
+COLAB = True
 
 DATA_SOURCE = "READ_CSV_FROM_DATABASE"
 # DATA_SOURCE = "SCRAPING"
@@ -40,13 +40,13 @@ SCRAPING_NASDAQ = False
 WIKI = True
 
 DEBUG = True
-DEBUG_FORCE_STOCK = True
-#DEBUG_FORCE_STOCK = False
+#DEBUG_FORCE_STOCK = True
+DEBUG_FORCE_STOCK = False
 
 #SELCTION = ["GAINERS"]
 #SELCTION = ["TRENDING"]
 #SELCTION = ["CAC40"]
-SELCTION = ["DJI"]
+SELCTION = ["DJI","CAC40"]
 #SELCTION = ["NASDAQ"]
 #SELCTION = ["ACTIVES"]
 #SELCTION = ["LOOSERS"]
