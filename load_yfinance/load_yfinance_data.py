@@ -53,6 +53,7 @@ def get_data_finance(filter):
         else:
             if(config.DEBUG_FORCE_STOCK == True):
                 stock = "AAPL"
+                #stock = "DOW"
 
             start_stock = datetime.datetime.now()
             print("start", stock," time: ",start_stock)
@@ -69,7 +70,7 @@ def get_data_finance(filter):
 
                 df_full_data_stock = pre_process_indictor_data(stock, df_full_data_stock)
 
-                if (config.COMPUTE_DT == True):
+                if (config.COMPUTE_PREDICT_DT == True):
                     df_movement_stock_list = run_DT_prediction(df_full_data_stock, df_movement_stock_list)
 
                 # Compute Model
@@ -92,8 +93,12 @@ def get_data_finance(filter):
             print("stock:",stock ," time: ",delta)
 
             cpt = cpt + 1
-            if ((cpt % 5) == 0):
+            if ((cpt % config.MODULO_BACKUP) == 0):
                 SaveData(df_movement_list, "movmentlist_tmp_" + str(cpt) + ".csv")
+
+                if (config.COLAB == True):
+                    shutil.copy("./data/yfinance_data/" + "movmentlist_tmp_" + str(cpt) + ".csv",
+                                "../drive/MyDrive/colab_results")
 
     today = date.today()
     #SaveData(df_movement_list, filter + "_movmentlist_final_" + str(today) + ".csv")

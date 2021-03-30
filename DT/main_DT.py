@@ -44,37 +44,37 @@ def run_DT_prediction(df, df_movement_stock_list):
     else:
         Y_test = expected_y["target"].to_list()
 
-    if(config.LIGHTGBM == True):
-        accuracy_lightGBM = get_lightGBM_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["lightGBM"] = accuracy_lightGBM
-
-    if(config.COMPUTE_GRBOOST == True):
-        accuracy_GRBOOST = get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test, 100)
-        df_movement_stock_list["GRBOOST"] = accuracy_GRBOOST
-
-    if(config.COMPUTE_GNaiveB == True):
-        accuracy_GNaiveB = get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test, 100)
-        df_movement_stock_list["GNaiveB"] = accuracy_GNaiveB
-
-    if(config.COMPUTE_ADABOOST == True):
-        accuracy_ADABOOST = get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test, 100)
-        df_movement_stock_list["ADABOOST"] = accuracy_ADABOOST
+    if(config.COMPUTE_SVM == True):
+        accuracy_SVM = get_SVM_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["SVM"] = accuracy_SVM
 
     if(config.COMPUTE_DT == True):
         accuracy_DTR = get_DTR_prediction(X_train, X_test, Y_train, Y_test)
         df_movement_stock_list["DTR"] = accuracy_DTR
 
+    if(config.LIGHTGBM == True):
+        accuracy_lightGBM = get_lightGBM_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["lightGBM"] = accuracy_lightGBM
+
+    if(config.COMPUTE_GRBOOST == True):
+        accuracy_GRBOOST = get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["GRBOOST"] = accuracy_GRBOOST
+
+    if(config.COMPUTE_GNaiveB == True):
+        accuracy_GNaiveB = get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["GNaiveB"] = accuracy_GNaiveB
+
+    if(config.COMPUTE_ADABOOST == True):
+        accuracy_ADABOOST = get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["ADABOOST"] = accuracy_ADABOOST
+
     if(config.COMPUTE_RF == True):
-        accuracy_RF = get_RF_prediction(X_train, X_test, Y_train, Y_test, 10)
+        accuracy_RF = get_RF_prediction(X_train, X_test, Y_train, Y_test)
         df_movement_stock_list["RF"] = accuracy_RF
 
     if(config.COMPUTE_KN == True):
-        accuracy_KN = get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test, 3)
+        accuracy_KN = get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test)
         df_movement_stock_list["KNeighbors"] = accuracy_KN
-
-    if(config.COMPUTE_SVM == True):
-        accuracy_SVM = get_SVM_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["SVM"] = accuracy_SVM
 
     if(config.XGBOOST == True):
         accuracy_XGBOOST, result = get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test)
