@@ -53,7 +53,7 @@ def get_data_finance(filter):
         else:
             if(config.DEBUG_FORCE_STOCK == True):
                 stock = "AAPL"
-                #stock = "DOW"
+                #stock = "STLA.PA"
 
             start_stock = datetime.datetime.now()
             print("start", stock," time: ",start_stock)

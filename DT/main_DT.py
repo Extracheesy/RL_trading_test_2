@@ -8,8 +8,10 @@ from predict_DT import get_RF_prediction
 from predict_DT import get_SVM_prediction
 from predict_DT import get_GRBOOST_prediction
 from predict_DT import get_GNaiveB_prediction
-from predict_lightgbm import get_lightGBM_prediction
 
+from predict_lightgbm import get_lightGBM_prediction
+from predict_DT import model_SVM_preprocessing
+from predict_DT import model_ADABoost_preprocessing
 
 from sklearn.model_selection import train_test_split
 
@@ -29,11 +31,11 @@ def run_DT_prediction(df, df_movement_stock_list):
     df.pop('Close')
     df.pop('High')
     df.pop('Low')
-    df.pop('Volume')
+    #df.pop('Volume')
 
     X = df
 
-    X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.3, random_state=5)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2, random_state=5)
     #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
     expected_y = pd.DataFrame(Y_test)
@@ -43,6 +45,23 @@ def run_DT_prediction(df, df_movement_stock_list):
         Y_test = expected_y["trend"].to_list()
     else:
         Y_test = expected_y["target"].to_list()
+
+
+
+    model_SVM_preprocessing(X_train, X_test, Y_train, Y_test)
+
+
+    model_ADABoost_preprocessing(X_train, X_test, Y_train, Y_test)
+
+
+
+
+
+
+
+    if(config.COMPUTE_KN == True):
+        accuracy_KN = get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["KNeighbors"] = accuracy_KN
 
     if(config.COMPUTE_SVM == True):
         accuracy_SVM = get_SVM_prediction(X_train, X_test, Y_train, Y_test)
@@ -71,10 +90,6 @@ def run_DT_prediction(df, df_movement_stock_list):
     if(config.COMPUTE_RF == True):
         accuracy_RF = get_RF_prediction(X_train, X_test, Y_train, Y_test)
         df_movement_stock_list["RF"] = accuracy_RF
-
-    if(config.COMPUTE_KN == True):
-        accuracy_KN = get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["KNeighbors"] = accuracy_KN
 
     if(config.XGBOOST == True):
         accuracy_XGBOOST, result = get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test)
