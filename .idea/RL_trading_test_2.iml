@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/predict" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/scraping" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tools" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tuning" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.6 (RL_trading_test_2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
