@@ -5,14 +5,15 @@ MODULO_BACKUP = 2  #frequence of backup (every x file performed...)
 COMPUTE_PREDICT_MODEL = False
 #SAVE_MODEL = "SAVE_LSTM_MODEL"
 SAVE_MODEL = "NO_SAVE_LSTM_MODEL"
-PRINT_MODEL = True
+#PRINT_MODEL = True
+PRINT_MODEL = False
 
 COMPUTE_PREDICT_DT = True
 #COMPUTE_PREDICT_DT = False
 COMPUTE_DT = True
 #COMPUTE_DT = False
-XGBOOST = True
-#XGBOOST = False
+#XGBOOST = True
+XGBOOST = False
 COMPUTE_SVM = True
 #COMPUTE_SVM = False
 COMPUTE_KN = True
@@ -25,8 +26,8 @@ COMPUTE_GRBOOST = True
 #COMPUTE_GRBOOST = False
 COMPUTE_GNaiveB = True
 #COMPUTE_GNaiveB = False
-LIGHTGBM = True
-#LIGHTGBM = False
+#LIGHTGBM = True
+LIGHTGBM = False
 
 
 COLAB = False

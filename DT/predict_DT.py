@@ -89,13 +89,15 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
 
         if (accuracy > best_accuracy):
             best_accuracy = accuracy
+            best_result = "best_score: " + str(Classifier_grid.best_score_) + " best_param: " + str(Classifier_grid.best_params_)
 
-    return round(best_accuracy / len_y_test * 100,2)
+    return round(best_accuracy / len_y_test * 100,2), best_result
 
 
 
 def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
+    print("XGBOOST>>>>>")
     n_estimators = [150, 200, 250, 450, 500, 550, 1000]
     max_depth = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
@@ -105,43 +107,47 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
     len_y_test = len(Y_test)
 
-    for n in n_estimators:
-        for md in max_depth:
-            ################### XGBOOST ###################
-            params = {
-                'polynomialfeatures__degree': [2, 3, 4],
-                'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
-            }
-            model = make_pipeline(PolynomialFeatures(2, include_bias=False),
-                                  SelectKBest(f_classif, k=8),
-                                  XGBClassifier(n_estimators=n, max_depth=md))
+    #for n in n_estimators:
+    #    for md in max_depth:
+    ################### XGBOOST ###################
+    params = {
+        'polynomialfeatures__degree': [2, 3, 4],
+        'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
+        'xgbclassifier__n_estimators' : [150, 200, 250, 450, 500, 550, 1000],
+        'xgbclassifier__max_depth': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    }
+    model = make_pipeline(PolynomialFeatures(2, include_bias=False),
+                          SelectKBest(f_classif, k=8),
+                          XGBClassifier(random_state=0))
+                          #XGBClassifier(n_estimators=n, max_depth=md))
 
-            Classifier_XGB = GridSearchCV(model, param_grid=params, cv=4)
-            #Classifier_XGB = XGBClassifier(n_estimators=n, max_depth=md)
-            # Classifier_XGB = XGBRegressor(objective='reg:squarederror')
-            Classifier_XGB.fit(X_train, Y_train)
+    Classifier_XGB = GridSearchCV(model, param_grid=params, cv=4)
+    #Classifier_XGB = XGBClassifier(n_estimators=n, max_depth=md)
+    # Classifier_XGB = XGBRegressor(objective='reg:squarederror')
+    Classifier_XGB.fit(X_train, Y_train)
 
-            if (config.PRINT_MODEL == True):
-                print("model :", Classifier_XGB)
-                print("best_param: ", Classifier_XGB.best_params_)
-                print("best_score: ", Classifier_XGB.best_score_)
+    if (config.PRINT_MODEL == True):
+        print("model :", Classifier_XGB)
+        print("best_param: ", Classifier_XGB.best_params_)
+        print("best_score: ", Classifier_XGB.best_score_)
 
-            Result_predicted_XGB = Classifier_XGB.predict(X_test)
-            Result_predicted_XGB = Result_predicted_XGB.reshape(-1, 1)
+    Result_predicted_XGB = Classifier_XGB.predict(X_test)
+    Result_predicted_XGB = Result_predicted_XGB.reshape(-1, 1)
 
-            result_XGB = pd.DataFrame(Result_predicted_XGB)
-            result_XGB.reset_index(drop=True, inplace=True)
+    result_XGB = pd.DataFrame(Result_predicted_XGB)
+    result_XGB.reset_index(drop=True, inplace=True)
 
-            predictions = result_XGB[0].to_list()
-            accuracy_XGB = accuracy_score(Y_test, predictions, normalize=False)
+    predictions = result_XGB[0].to_list()
+    accuracy_XGB = accuracy_score(Y_test, predictions, normalize=False)
 
-            if accuracy_XGB > max_score_XGB:
-                best_depth_XGB = md
-                best_estimator_XGB = n
-                max_score_XGB = accuracy_XGB
+    if accuracy_XGB > max_score_XGB:
+        #best_depth_XGB = md
+        #best_estimator_XGB = n
+        max_score_XGB = accuracy_XGB
 
     accuracy = max_score_XGB
-    result = "XGB_depth_" + str(best_depth_XGB) + "_est_" + str(best_estimator_XGB)
+    #result = "XGB_depth_" + str(best_depth_XGB) + "_est_" + str(best_estimator_XGB)
+    result = Classifier_XGB.best_params_
 
     return round(accuracy / len_y_test * 100), result
 
@@ -185,8 +191,9 @@ def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
 
         if accuracy_SVM > accuracy:
             accuracy = accuracy_SVM
+            result = "best_score: " + str(Classifier_SVM.best_score_) + " best_param: " + str(Classifier_SVM.best_params_) + " kernel: " + kernel
 
-    return round(accuracy / len_y_test * 100,2)
+    return round(accuracy / len_y_test * 100,2), result
 
 def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test):
 
@@ -232,8 +239,9 @@ def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test):
 
                 if(accuracy > best_accuracy):
                     best_accuracy = accuracy
+                    best_result = "best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " weights: " + str(w) + " n_neighbors: " + str(n)
 
-    return round(best_accuracy / len_y_test * 100,2)
+    return round(best_accuracy / len_y_test * 100,2), best_result
 
 
 def get_RF_prediction(X_train, X_test, Y_train, Y_test):
@@ -276,8 +284,9 @@ def get_RF_prediction(X_train, X_test, Y_train, Y_test):
 
             if(accuracy > best_accuracy):
                 best_accuracy = accuracy
+                best_result = "best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " criterion: " + str(c) + " n_estimators: " + str(n)
 
-    return round(best_accuracy / len_y_test * 100, 2)
+    return round(best_accuracy / len_y_test * 100, 2), best_result
 
 def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
 
@@ -327,8 +336,9 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
 
                 if (accuracy > best_accuracy):
                     best_accuracy = accuracy
+                    best_result = "best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " learning_rate: " + str(lr) + " n_estimators: " + str(n)
 
-    return round(best_accuracy / len_y_test * 100,2)
+    return round(best_accuracy / len_y_test * 100,2), best_result
 
 def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
@@ -369,8 +379,9 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
         if (accuracy > best_accuracy):
             best_accuracy = accuracy
+            best_result = "best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " n_estimators: " + str(n)
 
-    return round(best_accuracy / len_y_test * 100,2)
+    return round(best_accuracy / len_y_test * 100,2), best_result
 
 def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test):
 
@@ -412,5 +423,6 @@ def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test):
 
             if (accuracy > best_accuracy):
                 best_accuracy = accuracy
+                best_result = "best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " learning_rate: " + str(lr) + " n_estimators: " + str(n)
 
-    return round(best_accuracy / len_y_test * 100,2)
+    return round(best_accuracy / len_y_test * 100,2), best_result
