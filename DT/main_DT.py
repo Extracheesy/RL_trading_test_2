@@ -58,11 +58,11 @@ def run_DT_prediction(df, df_movement_stock_list):
         df_movement_stock_list["XGBOOST"] = accuracy_XGBOOST
         print("XGBOOST PARAMETER: ",result)
 
-    if(config.COMPUTE_ADABOOST == True):
-        print("model ADABOOST >>>>")
-        accuracy_ADABOOST, result = get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["ADABOOST"] = accuracy_ADABOOST
-        print("ADABOOST PARAMETER: ", result)
+    if(config.COMPUTE_GNaiveB == True):
+        print("model GNaiveB >>>>")
+        accuracy_GNaiveB, result = get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["GNaiveB"] = accuracy_GNaiveB
+        print("GNaiveB PARAMETER: ", result)
 
     if(config.COMPUTE_RF == True):
         print("model RF >>>>")
@@ -70,11 +70,22 @@ def run_DT_prediction(df, df_movement_stock_list):
         df_movement_stock_list["RF"] = accuracy_RF
         print("RF PARAMETER: ", result)
 
-    if(config.COMPUTE_SVM == True):
-        print("model SVM >>>>")
-        accuracy_SVM, result = get_SVM_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["SVM"] = accuracy_SVM
-        print("SVM PARAMETER: ", result)
+    if(config.COMPUTE_DT == True):
+        print("model DT >>>>")
+        accuracy_DTR, result = get_DTR_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["DTR"] = accuracy_DTR
+        print("DTR PARAMETER: ", result)
+
+    if(config.LIGHTGBM == True):
+        print("model LightGBM >>>>")
+        accuracy_lightGBM = get_lightGBM_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["lightGBM"] = accuracy_lightGBM
+
+    if(config.COMPUTE_GRBOOST == True):
+        print("model GRBOOST >>>>")
+        accuracy_GRBOOST, result = get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["GRBOOST"] = accuracy_GRBOOST
+        print("GRBOOST PARAMETER: ", result)
 
     if(config.COMPUTE_KN == True):
         print("model KN >>>>")
@@ -82,31 +93,16 @@ def run_DT_prediction(df, df_movement_stock_list):
         df_movement_stock_list["KNeighbors"] = accuracy_KN
         print("KN PARAMETER: ", result)
 
-    if(config.COMPUTE_DT == True):
-        print("model DT >>>>")
-        accuracy_DTR, result = get_DTR_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["DTR"] = accuracy_DTR
-        print("DTR PARAMETER: ", result)
+    if(config.COMPUTE_SVM == True):
+        print("model SVM >>>>")
+        accuracy_SVM, result = get_SVM_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["SVM"] = accuracy_SVM
+        print("SVM PARAMETER: ", result)
 
-
-
-
-
-    if(config.LIGHTGBM == True):
-        accuracy_lightGBM = get_lightGBM_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["lightGBM"] = accuracy_lightGBM
-
-    if(config.COMPUTE_GRBOOST == True):
-        accuracy_GRBOOST, result = get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["GRBOOST"] = accuracy_GRBOOST
-        print("GRBOOST PARAMETER: ", result)
-
-    if(config.COMPUTE_GNaiveB == True):
-        accuracy_GNaiveB, result = get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test)
-        df_movement_stock_list["GNaiveB"] = accuracy_GNaiveB
-        print("GNaiveB PARAMETER: ", result)
-
-
-
+    if(config.COMPUTE_ADABOOST == True):
+        print("model ADABOOST >>>>")
+        accuracy_ADABOOST, result = get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["ADABOOST"] = accuracy_ADABOOST
+        print("ADABOOST PARAMETER: ", result)
 
     return df_movement_stock_list

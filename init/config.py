@@ -1,4 +1,4 @@
-LOAD_YEARS = 10 * 52 # 5 * 12 months for 5 years
+LOAD_YEARS = 1 * 52 # 5 * 12 months for 5 years
 MODULO_BACKUP = 2  #frequence of backup (every x file performed...)
 
 #COMPUTE_PREDICT_MODEL = True
@@ -12,8 +12,8 @@ COMPUTE_PREDICT_DT = True
 #COMPUTE_PREDICT_DT = False
 COMPUTE_DT = True
 #COMPUTE_DT = False
-#XGBOOST = True
-XGBOOST = False
+XGBOOST = True
+#XGBOOST = False
 COMPUTE_SVM = True
 #COMPUTE_SVM = False
 COMPUTE_KN = True
