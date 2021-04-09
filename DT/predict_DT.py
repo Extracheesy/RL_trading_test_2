@@ -294,38 +294,38 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
 
     for i in range(3):
         for be in base_estimator:
-            for n in n_estimators:
-                for lr in learning_rate:
-                    ################### ADABOOST ###################
-                    params = {
-                        'polynomialfeatures__degree': [2, 3],
-                        'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
-                    }
-                    if be == True:
-                        model = make_pipeline(PolynomialFeatures(2, include_bias=False),
-                                              SelectKBest(f_classif, k=8),
-                                              AdaBoostClassifier(n_estimators = n, learning_rate=lr))
-                        GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
-                        #GridClassifier = AdaBoostClassifier(n_estimators = n, learning_rate=lr)
-                    else:
-                        model = make_pipeline(PolynomialFeatures(2, include_bias=False),
-                                              SelectKBest(f_classif, k=8),
-                                              AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr))
-                        GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
-                        #GridClassifier = AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr)
+            #for n in n_estimators:
+                #for lr in learning_rate:
+            ################### ADABOOST ###################
+            params = {
+                'polynomialfeatures__degree': [2, 3],
+                'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
+            }
+            if be == True:
+                model = make_pipeline(PolynomialFeatures(2, include_bias=False),
+                                      SelectKBest(f_classif, k=8),
+                                      AdaBoostClassifier(n_estimators = n, learning_rate=lr))
+                GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
+                #GridClassifier = AdaBoostClassifier(n_estimators = n, learning_rate=lr)
+            else:
+                model = make_pipeline(PolynomialFeatures(2, include_bias=False),
+                                      SelectKBest(f_classif, k=8),
+                                      AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr))
+                GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
+                #GridClassifier = AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr)
 
-                    GridClassifier.fit(X_train, Y_train)
+            GridClassifier.fit(X_train, Y_train)
 
-                    if (GridClassifier.best_score_ > best_score):
-                        Classifier = GridClassifier
-                        best_lr = lr
-                        best_n = n
-                        best_score = GridClassifier.best_score_
-                        if be == True:
-                            best_be = "base_estimator: DecisionTreeClassifier"
-                        else:
-                            best_be = "base_estimator: none"
-                        best_len_data = len(X_train)
+            if (GridClassifier.best_score_ > best_score):
+                Classifier = GridClassifier
+                best_lr = lr
+                best_n = n
+                best_score = GridClassifier.best_score_
+                if be == True:
+                    best_be = "base_estimator: DecisionTreeClassifier"
+                else:
+                    best_be = "base_estimator: none"
+                best_len_data = len(X_train)
         X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
 
     if (config.PRINT_MODEL == True):
