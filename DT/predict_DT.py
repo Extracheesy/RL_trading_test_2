@@ -353,26 +353,26 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
 
     for i in range(3):
-        for n in n_estimators:
-            ################### GradientBoostingClassifier ###################
-            params = {
-                'polynomialfeatures__degree': [2, 3],
-                'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
-            }
+        #for n in n_estimators:
+        ################### GradientBoostingClassifier ###################
+        params = {
+            'polynomialfeatures__degree': [2, 3],
+            'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
+        }
 
-            model = make_pipeline(PolynomialFeatures(2, include_bias=False),
-                                  SelectKBest(f_classif, k=8),
-                                  GradientBoostingClassifier(n_estimators = n))
-            GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
-            #Classifier = GradientBoostingClassifier(n_estimators = n)
+        model = make_pipeline(PolynomialFeatures(2, include_bias=False),
+                              SelectKBest(f_classif, k=8),
+                              GradientBoostingClassifier(n_estimators = n))
+        GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
+        #Classifier = GradientBoostingClassifier(n_estimators = n)
 
-            GridClassifier.fit(X_train, Y_train)
+        GridClassifier.fit(X_train, Y_train)
 
-            if (GridClassifier.best_score_ > best_score):
-                Classifier = GridClassifier
-                best_n = n
-                best_score = GridClassifier.best_score_
-                best_len_data = len(X_train)
+        if (GridClassifier.best_score_ > best_score):
+            Classifier = GridClassifier
+            best_n = n
+            best_score = GridClassifier.best_score_
+            best_len_data = len(X_train)
         X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
 
     if (config.PRINT_MODEL == True):
