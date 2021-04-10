@@ -38,6 +38,8 @@ def run_DT_prediction(df, df_movement_stock_list):
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
+    print("data_size: ",len(X_train))
+
     expected_y = pd.DataFrame(Y_test)
     expected_y.reset_index(drop=True, inplace=True)
 

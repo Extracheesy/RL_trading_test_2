@@ -87,7 +87,7 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(3):
+    for i in range(4):
         ################### DTC ###################
         params = {
             'polynomialfeatures__degree': [2, 3],
@@ -138,7 +138,7 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
     best_score = 0
     len_data = len(X_train) + len(X_test)
 
-    for i in range(3):
+    for i in range(4):
         params = {
             'polynomialfeatures__degree': [2, 3],
             'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
@@ -174,9 +174,9 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
     result_XGB.reset_index(drop=True, inplace=True)
 
     predictions = result_XGB[0].to_list()
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=True), 4)
+    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100, 2)
     #best_result = "XGB_depth_" + str(best_depth_XGB) + "_est_" + str(best_estimator_XGB)
-    best_result = "accuracy: " + str(accuracy * 100) + " best praram: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
+    best_result = "accuracy: " + str(accuracy) + " best praram: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -186,7 +186,7 @@ def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(3):
+    for i in range(4):
         ################### SVM ###################
         for kernel in ['linear','rbf', 'poly']:
 
@@ -236,7 +236,7 @@ def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test):
     weights = ['uniform', 'distance']
     n_neighbors = [3, 5, 7, 10, 25, 50, 100]
 
-    for i in range(3):
+    for i in range(4):
         for w in weights:
             for n in n_neighbors:
                 if((len(X_train) > n) and (len(Y_train) > n)):
@@ -287,7 +287,7 @@ def get_RF_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [5, 10, 20]
     criterion = ['gini','entropy']
 
-    for i in range(3):
+    for i in range(4):
         for n in n_estimators:
             for c in criterion:
                 ################### Random Forest ###################
@@ -337,7 +337,7 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
     learning_rate = [0.01, 0.05, 0.1, 0.5, 1]
     base_estimator = [True, False]
 
-    for i in range(3):
+    for i in range(4):
         for be in base_estimator:
             #for n in n_estimators:
                 #for lr in learning_rate:
@@ -349,13 +349,15 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
             if be == True:
                 model = make_pipeline(PolynomialFeatures(2, include_bias=False),
                                       SelectKBest(f_classif, k=8),
-                                      AdaBoostClassifier(n_estimators = n, learning_rate=lr))
+                                      AdaBoostClassifier())
+                                      #AdaBoostClassifier(n_estimators = n, learning_rate=lr))
                 GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
                 #GridClassifier = AdaBoostClassifier(n_estimators = n, learning_rate=lr)
             else:
                 model = make_pipeline(PolynomialFeatures(2, include_bias=False),
                                       SelectKBest(f_classif, k=8),
-                                      AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr))
+                                      AdaBoostClassifier(base_estimator=DecisionTreeClassifier()))
+                                      #AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr))
                 GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
                 #GridClassifier = AdaBoostClassifier(base_estimator = DecisionTreeClassifier() ,n_estimators=n, learning_rate=lr)
 
@@ -363,8 +365,10 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
 
             if (GridClassifier.best_score_ > best_score):
                 Classifier = GridClassifier
-                best_lr = lr
-                best_n = n
+                #best_lr = lr
+                #best_n = n
+                best_lr = 0
+                best_n = 0
                 best_score = GridClassifier.best_score_
                 if be == True:
                     best_be = "base_estimator: DecisionTreeClassifier"
@@ -397,7 +401,7 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
     best_score = 0
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
 
-    for i in range(3):
+    for i in range(4):
         #for n in n_estimators:
         ################### GradientBoostingClassifier ###################
         params = {
@@ -407,7 +411,8 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
         model = make_pipeline(PolynomialFeatures(2, include_bias=False),
                               SelectKBest(f_classif, k=8),
-                              GradientBoostingClassifier(n_estimators = n))
+                              GradientBoostingClassifier())
+                              #GradientBoostingClassifier(n_estimators = n))
         GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
         #Classifier = GradientBoostingClassifier(n_estimators = n)
 
@@ -415,7 +420,8 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
 
         if (GridClassifier.best_score_ > best_score):
             Classifier = GridClassifier
-            best_n = n
+            #best_n = n
+            best_n = 0
             best_score = GridClassifier.best_score_
             best_len_data = len(X_train)
         X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
@@ -445,7 +451,7 @@ def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
     learning_rate = [0.01, 0.05, 0.1, 0.5, 1]
 
-    for i in range(3):
+    for i in range(4):
         #for n in n_estimators:
         #    for lr in learning_rate:
         ################### AdaBoost Classifier with NaiveBayes base ###################
