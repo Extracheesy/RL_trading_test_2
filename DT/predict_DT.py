@@ -42,7 +42,7 @@ def get_Dummy_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(4):
+    for i in range(3):
         ################### dummy ###################
         params = {
             'polynomialfeatures__degree': [2, 3],
@@ -60,25 +60,33 @@ def get_Dummy_prediction(X_train, X_test, Y_train, Y_test):
             Classifier = Classifier_grid
             best_len_data = len(X_train)
 
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
-
+        print("Dummy try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+    
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
+        
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
 
@@ -87,7 +95,7 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(4):
+    for i in range(3):
         ################### DTC ###################
         params = {
             'polynomialfeatures__degree': [2, 3],
@@ -95,7 +103,7 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
             #'decisiontreeclassifier__criterion' : ['gini','entropy']
             }
         model = make_pipeline(PolynomialFeatures(2, include_bias=False), SelectKBest(f_classif, k=8),
-                              DecisionTreeClassifier(random_state=0))
+                              DecisionTreeClassifier(random_state=None))
         Classifier_grid = GridSearchCV(model, param_grid=params, cv=4)
 
 
@@ -106,24 +114,32 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
             Classifier = Classifier_grid
             best_len_data = len(X_train)
 
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
+        print("DTR try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -138,7 +154,7 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
     best_score = 0
     len_data = len(X_train) + len(X_test)
 
-    for i in range(4):
+    for i in range(3):
         params = {
             'polynomialfeatures__degree': [2, 3],
             'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
@@ -147,7 +163,7 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
         }
         model = make_pipeline(PolynomialFeatures(2, include_bias=False),
                               SelectKBest(f_classif, k=8),
-                              XGBClassifier(random_state=0))
+                              XGBClassifier(random_state=None))
                               #XGBClassifier(n_estimators=n, max_depth=md))
 
         Classifier_XGB = GridSearchCV(model, param_grid=params, cv=4)
@@ -160,23 +176,32 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
             Classifier = Classifier_XGB
             best_len_data = len(X_train)
 
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    Result_predicted_XGB = Classifier.predict(X_test)
-    Result_predicted_XGB = Result_predicted_XGB.reshape(-1, 1)
+        Result_predicted_XGB = Classifier.predict(X_test)
+        Result_predicted_XGB = Result_predicted_XGB.reshape(-1, 1)
 
-    result_XGB = pd.DataFrame(Result_predicted_XGB)
-    result_XGB.reset_index(drop=True, inplace=True)
+        result_XGB = pd.DataFrame(Result_predicted_XGB)
+        result_XGB.reset_index(drop=True, inplace=True)
 
-    predictions = result_XGB[0].to_list()
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100, 2)
-    #best_result = "XGB_depth_" + str(best_depth_XGB) + "_est_" + str(best_estimator_XGB)
-    best_result = "accuracy: " + str(accuracy) + " best praram: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
+        predictions = result_XGB[0].to_list()
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100, 2)
+        #best_result = "XGB_depth_" + str(best_depth_XGB) + "_est_" + str(best_estimator_XGB)
+        best_result = "accuracy: " + str(accuracy) + " best praram: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
+
+        print("XGBOOST try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -186,7 +211,7 @@ def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(4):
+    for i in range(3):
         ################### SVM ###################
         for kernel in ['linear','rbf', 'poly']:
 
@@ -197,7 +222,7 @@ def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
             model = make_pipeline(PolynomialFeatures(2, include_bias=False),
                                   SelectKBest(f_classif, k=8),
                                   StandardScaler(),
-                                  SVC(random_state=0, kernel=kernel))
+                                  SVC(random_state=None, kernel=kernel))
 
             Classifier_SVM = GridSearchCV(model, param_grid=params, cv=4)
             #Classifier_SVM = SVC(kernel = kernel)
@@ -209,24 +234,32 @@ def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
                 Classifier = Classifier_SVM
                 best_len_data = len(X_train)
 
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+        Result_predicted_SVM = Classifier.predict(X_test)
+        Result_predicted_SVM = Result_predicted_SVM.reshape(-1, 1)
 
-    Result_predicted_SVM = Classifier.predict(X_test)
-    Result_predicted_SVM = Result_predicted_SVM.reshape(-1, 1)
+        result_SVM = pd.DataFrame(Result_predicted_SVM)
+        result_SVM.reset_index(drop=True, inplace=True)
 
-    result_SVM = pd.DataFrame(Result_predicted_SVM)
-    result_SVM.reset_index(drop=True, inplace=True)
+        predictions = result_SVM[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " kernel: " + kernel + " df_len: " + str(best_len_data)
 
-    predictions = result_SVM[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " kernel: " + kernel + " df_len: " + str(best_len_data)
+        print("SVM try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -236,7 +269,7 @@ def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test):
     weights = ['uniform', 'distance']
     n_neighbors = [3, 5, 7, 10, 25, 50, 100]
 
-    for i in range(4):
+    for i in range(3):
         for w in weights:
             for n in n_neighbors:
                 if((len(X_train) > n) and (len(Y_train) > n)):
@@ -260,23 +293,32 @@ def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test):
                         best_score = GridClassifier.best_score_
                         Classifier = GridClassifier
                         best_len_data = len(X_train)
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " weights: " + str(w) + " n_neighbors: " + str(n) + " df_len: " + str(best_len_data)
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " weights: " + str(w) + " n_neighbors: " + str(n) + " df_len: " + str(best_len_data)
+
+        print("KN try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -287,7 +329,7 @@ def get_RF_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [5, 10, 20]
     criterion = ['gini','entropy']
 
-    for i in range(4):
+    for i in range(3):
         for n in n_estimators:
             for c in criterion:
                 ################### Random Forest ###################
@@ -297,7 +339,7 @@ def get_RF_prediction(X_train, X_test, Y_train, Y_test):
                 }
                 model = make_pipeline(PolynomialFeatures(2, include_bias=False),
                                       SelectKBest(f_classif, k=8),
-                                      RandomForestClassifier(random_state=0, criterion=c, n_estimators=n))
+                                      RandomForestClassifier(random_state=None, criterion=c, n_estimators=n))
 
                 GridClassifier = GridSearchCV(model, param_grid=params, cv=4)
                 #Classifier = RandomForestClassifier(n_estimators = n, criterion = c)
@@ -309,23 +351,33 @@ def get_RF_prediction(X_train, X_test, Y_train, Y_test):
                     best_n = n
                     best_c = c
                     best_len_data = len(X_train)
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
-    if(config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if(config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " criterion: " + str(best_c) + " n_estimators: " + str(best_n) + " df_len: " + str(best_len_data)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
+
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " criterion: " + str(best_c) + " n_estimators: " + str(best_n) + " df_len: " + str(best_len_data)
+
+        print("RF try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -337,7 +389,7 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
     learning_rate = [0.01, 0.05, 0.1, 0.5, 1]
     base_estimator = [True, False]
 
-    for i in range(4):
+    for i in range(3):
         for be in base_estimator:
             #for n in n_estimators:
                 #for lr in learning_rate:
@@ -375,23 +427,32 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
                 else:
                     best_be = "base_estimator: none"
                 best_len_data = len(X_train)
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + best_be + " learning_rate: " + str(best_lr) + " n_estimators: " + str(best_n) + " df_len: " + str(best_len_data)
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + best_be + " learning_rate: " + str(best_lr) + " n_estimators: " + str(best_n) + " df_len: " + str(best_len_data)
+
+        print("ADABOOST try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -401,7 +462,7 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
     best_score = 0
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
 
-    for i in range(4):
+    for i in range(3):
         #for n in n_estimators:
         ################### GradientBoostingClassifier ###################
         params = {
@@ -424,23 +485,32 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
             best_n = 0
             best_score = GridClassifier.best_score_
             best_len_data = len(X_train)
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
-    if (config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if (config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " n_estimators: " + str(best_n) + " df_len: " + str(best_len_data)
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " n_estimators: " + str(best_n) + " df_len: " + str(best_len_data)
+
+        print("GRBOOST try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
 
@@ -451,7 +521,7 @@ def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
     learning_rate = [0.01, 0.05, 0.1, 0.5, 1]
 
-    for i in range(4):
+    for i in range(3):
         #for n in n_estimators:
         #    for lr in learning_rate:
         ################### AdaBoost Classifier with NaiveBayes base ###################
@@ -474,24 +544,32 @@ def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test):
             #best_lr = lr
             best_score = GridClassifier.best_score_
             best_len_data = len(X_train)
-        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=None)
 
+    cpt = 0
+    accuracy = 0
+    while (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt <21)):
+        if(config.PRINT_MODEL == True):
+            print("model :", Classifier)
+            print("best_param: ", Classifier.best_params_)
+            print("best_score: ", Classifier.best_score_)
 
-    if(config.PRINT_MODEL == True):
-        print("model :", Classifier)
-        print("best_param: ", Classifier.best_params_)
-        print("best_score: ", Classifier.best_score_)
+        Result_predicted = Classifier.predict(X_test)
+        Result_predicted = Result_predicted.reshape(-1, 1)
 
-    Result_predicted = Classifier.predict(X_test)
-    Result_predicted = Result_predicted.reshape(-1, 1)
+        result = pd.DataFrame(Result_predicted)
+        result.reset_index(drop=True, inplace=True)
 
-    result = pd.DataFrame(Result_predicted)
-    result.reset_index(drop=True, inplace=True)
+        predictions = result[0].to_list()
+        #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+        accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+        #best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " learning_rate: " + str(best_lr) + " n_estimators: " + str(best_n)
+        best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
 
-    predictions = result[0].to_list()
-    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
-    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
-    #best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " learning_rate: " + str(best_lr) + " n_estimators: " + str(best_n)
-    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
+        print("GNaiveB try number: ",cpt, " accuracy: ",accuracy)
+        cpt = cpt + 1
+
+    if (((accuracy/100) < config.PREDICT_THRESHOLD) and (cpt == 20)):
+        accuracy = 0
 
     return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result

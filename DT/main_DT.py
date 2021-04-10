@@ -36,7 +36,12 @@ def run_DT_prediction(df, df_movement_stock_list):
 
     X = df
 
-    X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    total_size = len(X)
+
+    #X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.02, random_state=None)
+    reduce_size = round(600 / len(X_train),2)
+    X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, train_size=reduce_size, random_state=None)
 
     print("data_size: ",len(X_train))
 
