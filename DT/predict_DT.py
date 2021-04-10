@@ -87,7 +87,7 @@ def get_DTR_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(4):
+    for i in range(3):
         ################### DTC ###################
         params = {
             'polynomialfeatures__degree': [2, 3],
@@ -138,7 +138,7 @@ def get_XGBOOST_prediction(X_train, X_test, Y_train, Y_test):
     best_score = 0
     len_data = len(X_train) + len(X_test)
 
-    for i in range(4):
+    for i in range(3):
         params = {
             'polynomialfeatures__degree': [2, 3],
             'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
@@ -186,7 +186,7 @@ def get_SVM_prediction(X_train, X_test, Y_train, Y_test):
     len_y_test = len(Y_test)
     best_score = 0
 
-    for i in range(4):
+    for i in range(3):
         ################### SVM ###################
         for kernel in ['linear','rbf', 'poly']:
 
@@ -236,7 +236,7 @@ def get_KNeighbors_prediction(X_train, X_test, Y_train, Y_test):
     weights = ['uniform', 'distance']
     n_neighbors = [3, 5, 7, 10, 25, 50, 100]
 
-    for i in range(4):
+    for i in range(3):
         for w in weights:
             for n in n_neighbors:
                 if((len(X_train) > n) and (len(Y_train) > n)):
@@ -287,7 +287,7 @@ def get_RF_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [5, 10, 20]
     criterion = ['gini','entropy']
 
-    for i in range(4):
+    for i in range(3):
         for n in n_estimators:
             for c in criterion:
                 ################### Random Forest ###################
@@ -337,7 +337,7 @@ def get_ADABOOST_prediction(X_train, X_test, Y_train, Y_test):
     learning_rate = [0.01, 0.05, 0.1, 0.5, 1]
     base_estimator = [True, False]
 
-    for i in range(4):
+    for i in range(3):
         for be in base_estimator:
             #for n in n_estimators:
                 #for lr in learning_rate:
@@ -401,7 +401,7 @@ def get_GRBOOST_prediction(X_train, X_test, Y_train, Y_test):
     best_score = 0
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
 
-    for i in range(4):
+    for i in range(3):
         #for n in n_estimators:
         ################### GradientBoostingClassifier ###################
         params = {
@@ -451,7 +451,7 @@ def get_GNaiveB_prediction(X_train, X_test, Y_train, Y_test):
     n_estimators = [3, 5, 7, 10, 25, 50, 75, 100]
     learning_rate = [0.01, 0.05, 0.1, 0.5, 1]
 
-    for i in range(4):
+    for i in range(3):
         #for n in n_estimators:
         #    for lr in learning_rate:
         ################### AdaBoost Classifier with NaiveBayes base ###################
