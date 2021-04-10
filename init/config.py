@@ -1,4 +1,4 @@
-LOAD_YEARS = 1 * 52 # 5 * 12 months for 5 years
+LOAD_YEARS = 4 * 52 # 5 * 12 months for 5 years
 MODULO_BACKUP = 2  #frequence of backup (every x file performed...)
 
 #COMPUTE_PREDICT_MODEL = True
@@ -8,6 +8,8 @@ SAVE_MODEL = "NO_SAVE_LSTM_MODEL"
 #PRINT_MODEL = True
 PRINT_MODEL = False
 
+COMPUTE_DUMMY = True
+#COMPUTE_DUMMY = False
 COMPUTE_PREDICT_DT = True
 #COMPUTE_PREDICT_DT = False
 COMPUTE_DT = True

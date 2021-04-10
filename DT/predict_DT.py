@@ -30,12 +30,57 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.neural_network import MLPClassifier
-
+from sklearn.dummy import DummyClassifier
 #from train_predict import *
 from sklearn import svm
 from sklearn.metrics import f1_score
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
+
+
+def get_Dummy_prediction(X_train, X_test, Y_train, Y_test):
+    len_y_test = len(Y_test)
+    best_score = 0
+
+    for i in range(3):
+        ################### dummy ###################
+        params = {
+            'polynomialfeatures__degree': [2, 3],
+            'selectkbest__k': [4, 5, 6, 7, 8, 9, 10],
+            #'decisiontreeclassifier__criterion' : ['gini','entropy']
+            }
+        model = make_pipeline(PolynomialFeatures(2, include_bias=False), SelectKBest(f_classif, k=8),
+                              DummyClassifier(strategy='stratified'))
+        Classifier_grid = GridSearchCV(model, param_grid=params, cv=4)
+
+        Classifier_grid.fit(X_train, Y_train)
+
+        if (Classifier_grid.best_score_ > best_score):
+            best_score = Classifier_grid.best_score_
+            Classifier = Classifier_grid
+            best_len_data = len(X_train)
+
+        X_train, x_dump, Y_train, y_dump = train_test_split(X_train, Y_train, test_size=0.5, random_state=0)
+
+
+    if (config.PRINT_MODEL == True):
+        print("model :", Classifier)
+        print("best_param: ", Classifier.best_params_)
+        print("best_score: ", Classifier.best_score_)
+
+    Result_predicted = Classifier.predict(X_test)
+    Result_predicted = Result_predicted.reshape(-1, 1)
+
+    result = pd.DataFrame(Result_predicted)
+    result.reset_index(drop=True, inplace=True)
+
+    predictions = result[0].to_list()
+    #accuracy = accuracy_score(Y_test, predictions, normalize=False)
+    accuracy = round(accuracy_score(Y_test, predictions, normalize=False) / len_y_test * 100,2)
+    best_result = "accuracy: " + str(accuracy) + " best_score: " + str(Classifier.best_score_) + " best_param: " + str(Classifier.best_params_) + " df_len: " + str(best_len_data)
+
+    return accuracy, round(Classifier.best_score_*100,2), best_len_data, best_result
+
 
 
 def get_DTR_prediction(X_train, X_test, Y_train, Y_test):

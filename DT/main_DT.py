@@ -8,6 +8,7 @@ from predict_DT import get_RF_prediction
 from predict_DT import get_SVM_prediction
 from predict_DT import get_GRBOOST_prediction
 from predict_DT import get_GNaiveB_prediction
+from predict_DT import get_Dummy_prediction
 
 from predict_lightgbm import get_lightGBM_prediction
 #from predict_DT import model_SVM_preprocessing
@@ -50,6 +51,14 @@ def run_DT_prediction(df, df_movement_stock_list):
     # Model hyperparameters Tuning
     #model_SVM_preprocessing(X_train, X_test, Y_train, Y_test)
     #model_ADABoost_preprocessing(X_train, X_test, Y_train, Y_test)
+
+    if(config.COMPUTE_DUMMY == True):
+        print("model DT >>>>")
+        accuracy_DUMMY, bestscore_DUMMY, len_data_DUMMY, result = get_Dummy_prediction(X_train, X_test, Y_train, Y_test)
+        df_movement_stock_list["DUMMY_pred"] = accuracy_DUMMY
+        df_movement_stock_list["DUMMY_best"] = bestscore_DUMMY
+        df_movement_stock_list["DUMMY_dt_s"] = len_data_DUMMY
+        print("DUMMY PARAMETER: ", result)
 
     if(config.COMPUTE_DT == True):
         print("model DT >>>>")
