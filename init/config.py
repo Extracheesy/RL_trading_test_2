@@ -1,4 +1,4 @@
-LOAD_YEARS = 4 * 52 # 5 * 12 months for 5 years
+LOAD_YEARS = 10 * 52 # 5 * 12 months for 5 years
 MODULO_BACKUP = 2  #frequence of backup (every x file performed...)
 
 #COMPUTE_PREDICT_MODEL = True
